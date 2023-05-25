@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Main from './pages/Main';
-import {downloadZip} from './api';
+import {downloadZip} from './apis/initapi';
 
 
 

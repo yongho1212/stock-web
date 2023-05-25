@@ -1,11 +1,12 @@
 import React from 'react'
-import Calc from '../../components/Calc'
+import SearchForm from '../../components/SearchForm'
+import './index.scss'
 
 const Main = () => {
   return (
-    <>
-        <Calc />
-    </>
+    <div className='mainCtnr'>
+        <SearchForm />
+    </div>
   )
 }
 

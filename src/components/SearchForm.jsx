@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 
+import SearchResult from './SearchResult';
 
-function SearchResult({ company }) {
-  return (
-    <div>
-      <h3>{company.corp_name}</h3>
-      <p>코드: {company.corp_code}</p>
-    </div>
-  );
-}
 
-function SearchForm() {
+const SearchForm = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const handleInputChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+
 
   const filterCompanyName = (keyword, data) => {
     const results = [];
@@ -62,6 +53,10 @@ function SearchForm() {
         reject(event);
       };
     });
+  };
+
+  const handleInputChange = async(event) => {
+    setSearchTerm(event.target.value);
   };
 
   const handleSubmit = async (event) => {
