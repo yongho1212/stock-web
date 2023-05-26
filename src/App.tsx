@@ -12,6 +12,10 @@ import {downloadZip} from './apis/initapi';
 
 const App = () => {
 
+  const dataChecker = () => {
+    
+  }
+
   useEffect(() => {
     async function fetchData(){
       await downloadZip();
