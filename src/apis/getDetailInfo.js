@@ -5,21 +5,10 @@ export const getStockPrice = async (stockCode) => {
   try {
     const apiKey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
     
-    const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=QF0D0%2BJzKDhqvaAA2DsmkNHnLRaZs%2FA9u29oTdCSSDGIsdQxC%2Fxd3UvLI9yrKflZith0AqLJdPx2L4cl3uv2Xg%3D%3D&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
+    const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
 
     const response = await axios.get(url);
-    //     , {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     params: {
-    //       returnType: 'json',
-    //       serviceKey: apiKey,
-    //       likeSrtnCd: stockCode,
-    //       numOfRows: 1,
-    //       pageNo: 1
-    //     },
-    //   });
+
   
 
     if (response.status === 200) {

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Main from './pages/Main';
-import {downloadZip} from './apis/initapi';
+import {downloadZip, dbChecker} from './apis/initapi';
 
 
 
@@ -12,13 +12,17 @@ import {downloadZip} from './apis/initapi';
 
 const App = () => {
 
-  const dataChecker = () => {
-    
-  }
+
+  // useEffect(() => {
+  //   console.log(dbChecker())
+  // },[])
 
   useEffect(() => {
     async function fetchData(){
-      await downloadZip();
+      const result = await dbChecker();
+      if (!result) {
+        await downloadZip();
+      }
     }
     fetchData();
   },[])

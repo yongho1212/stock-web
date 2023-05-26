@@ -20,11 +20,14 @@ const CompanyDetailInfo = ({corpCode}) => {
         
         setRenderData(response.data);
         const codeData = response.data.stock_code
-        console.log(codeData)
+
         getStockPrice(codeData)
     }
     // 데이터가 없을 때는 로딩화면 보여주기
     // setState이용해서 뒤로갔을 때
+
+    // detail page 비동기처리 
+    // 종목코드 받아오기 => 그 코드로 주가 정보 보여주기
     
 
   return (
