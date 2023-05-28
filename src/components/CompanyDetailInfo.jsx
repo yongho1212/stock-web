@@ -2,28 +2,37 @@ import React, { useState, useEffect } from "react";
 import { searchByCoprCode } from "../apis/individual";
 import axios from "axios";
 import { getStockPrice } from "../apis/getDetailInfo";
+import styled from "styled-components";
+
 
 const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
   const apiKey = process.env.REACT_APP_DART_API_KEY;
+
   
+  // 마운트 될 때
+  // !! TODO 언마운트 시점에 clear함수 적용하기
   useEffect(() => {
-    getDetailLogin(corpCode);
+   callCombinedAPI(corpCode);
+    return () => callCombinedAPI(corpCode);
   }, []);
-  // searchByCorpCode가 실행되고 난 뒤 getStockPrice가 실해될 수 있도록 순서 보장을 해줘야함
-  const getDetailLogin = async (corpCode) => {
+
+  // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
+  const callCombinedAPI = async (corpCode) => {
     try {
       // 변수에 할당해서 return값을 다음 함수에 전달
+      
       const stkCode = await searchByCoprCode(corpCode);
-      console.log(stkCode);
-      const stkDetailInfo = await getStockPrice(stkCode);
-      console.log(stkDetailInfo);
+      
+      await getStockPrice(stkCode);
+      // const stkDetailInfo = 
     } catch (error) {
-      console.error("Error in getDetailLogin: ", error);
+      console.error("Error in callCombinedAPI: ", error);
     }
   };
 
+  // DART 검색
   const searchByCoprCode = async (corpCode) => {
     const url = `https://opendart.fss.or.kr/api/company.json?crtfc_key=${apiKey}&corp_code=${corpCode}`;
     const res = await axios.get(url);
@@ -35,12 +44,19 @@ const CompanyDetailInfo = ({ corpCode }) => {
       throw new Error("Error in searchByCoprCode");
     }
   };
-  const getStockPrice = async (stockCode) => {
+
+  // 종목 코드로 주식 정보 검색
+  // !!TODO 검색 날짜 파라미터로 만들어서 넘기기
+  // !!TODO 통신중이라 데이터가 비어있는 경우엔 로딩 인디케이터 보여주기
+  //
+  const getStockPrice = async(stockCode) => {
     try {
-      console.log("2");
-      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
+      const date = '20230525';
+      
+      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=${date}&likeSrtnCd=${stockCode}`;
       const res = await axios.get(url);
       const resData = res?.data?.response?.body?.items?.item[0];
+      
       console.log(resData);
       setRenderDetialData(resData);
       return resData;
@@ -49,31 +65,66 @@ const CompanyDetailInfo = ({ corpCode }) => {
     }
   };
 
-  // const searchByCoprCode1 = async(corpCode) => {
-  //     const apiKey = process.env.REACT_APP_DART_API_KEY;
-  //     const url = `https://opendart.fss.or.kr/api/company.json?crtfc_key=${apiKey}&corp_code=${corpCode}`;
-  //     const response = await axios.get(url);
+  //날짜 string 제조 함수
+  const getDateToString = () => {
+    try {
+      const currDate = new Date();
+      const curryear = currDate.getFullYear();
+      let currmonth;
+      if (currDate.getMonth() < 9) {
+        currmonth = `0${currDate.getMonth() + 1}`;
+      } else {
+        currmonth = currDate.getMonth() + 1;
+      }
+      const currdate = currDate.getDate();
+      return `${curryear}${currmonth}${currdate}`;
 
-  //     setRenderData(response.data);
-  //     const codeData = response.data.stock_code
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  //     getStockPrice(codeData).then(res => console.log(res.data.response.body.items.item[0]))
-  // }
-  // 데이터가 없을 때는 로딩화면 보여주기
-  // setState이용해서 뒤로갔을 때
-
-  // detail page 비동기처리
-  // 종목코드 받아오기 => 그 코드로 주가 정보 보여주기
+  
 
   return (
-    <div>
-      <div>{renderData?.adres}</div>
-      <div>{renderData?.corp_name}</div>
-      <div>{renderData?.corp_name_eng}</div>
-      <div>{renderData?.stock_name}</div>
-      <div>{renderData?.stock_code}</div>
-    </div>
-  );
+    <Container>
+      {/* 이거 정말 중요해요!! 까먹지 마세여 */}
+      {renderData && (
+        <>
+        <Item>{renderData?.adres}</Item>
+        <Item>{renderData?.corp}</Item>
+         <Item>{renderData?.corp_name}</Item>
+         <Item>{renderData?.corp_name_eng}</Item>
+         <Item>{renderData?.stock_name}</Item>
+         <Item>{renderData?.stock_code}</Item>
+        </>
+      )}
+
+       {renderData && renderDeatilData &&
+        <StockPrice>{renderDeatilData?.mkp}원</StockPrice>  
+       }
+       
+     </Container>
+   );
 };
 
 export default CompanyDetailInfo;
+
+
+const Container = styled.div`
+background-color: #f9f9f9;
+padding: 20px;
+border-radius: 5px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const Item = styled.div`
+margin-bottom: 10px;
+font-size: 16px;
+`;
+
+const StockPrice = styled.div`
+font-size: 24px;
+font-weight: bold;
+color: #ff5500;
+`;
