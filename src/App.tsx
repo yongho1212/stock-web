@@ -1,22 +1,15 @@
 import React, { useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Main from './pages/Main';
 import {downloadZip, dbChecker} from './apis/initapi';
 
 
 
-// 앱이 켜질 때 zip파일을 미리 받아 오면서 로딩페이지 구현 
-// 받아온 데이터는 localstorage안에 저장
-
-
 const App = () => {
 
+  // !!TODO checker가 PENDING 상태일 때 INDICATOR RENDER
 
-  // useEffect(() => {
-  //   console.log(dbChecker())
-  // },[])
-
+  // 마운트시 indexedDB에 데이터가 있는지 확인하고 없는 경우에만 downloadzip을 실행함
   useEffect(() => {
     async function fetchData(){
       const result = await dbChecker();

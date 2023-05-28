@@ -34,7 +34,7 @@ export const dbChecker = async() => {
   const objectStore = transaction.objectStore('companies');
   const datas = objectStore.getAll()
   datas.onsuccess = e => {
-    console.log(e.target.result=== undefined ? false : true)
+    // console.log(e.target.result=== undefined ? false : true)
     resolve(e.target.result === undefined ? false : true)
   }
 })
