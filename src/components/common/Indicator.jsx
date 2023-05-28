@@ -5,7 +5,6 @@ import styled, { keyframes } from "styled-components";
 const Indicator = () => {
   const [loading, setLoading] = useState(true);
 
-
   return (
     <>
       {loading && (

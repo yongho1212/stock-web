@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { searchByCoprCode } from "../apis/individual";
 import axios from "axios";
-import { getStockPrice } from "../apis/getDetailInfo";
 import styled from "styled-components";
+//apis
+import { searchByCoprCode } from "../apis/individual";
+import { getStockPrice } from "../apis/getDetailInfo";
+//cmpts
 import Indicator from "../components/common/Indicator";
 
 const CompanyDetailInfo = ({ corpCode }) => {
@@ -16,15 +18,13 @@ const CompanyDetailInfo = ({ corpCode }) => {
   useEffect(() => {
     callCombinedAPI(corpCode);
     return () => callCombinedAPI(corpCode);
-  }, []);
+  },[]);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
   const callCombinedAPI = async (corpCode) => {
     try {
       // 변수에 할당해서 return값을 다음 함수에 전달
-
       const stkCode = await searchByCoprCode(corpCode);
-
       await getStockPrice(stkCode);
       // const stkDetailInfo =
     } catch (error) {
@@ -37,7 +37,6 @@ const CompanyDetailInfo = ({ corpCode }) => {
     const url = `https://opendart.fss.or.kr/api/company.json?crtfc_key=${apiKey}&corp_code=${corpCode}`;
     const res = await axios.get(url);
     if (res) {
-      console.log("1 fin", res.data.stock_code);
       setRenderData(res.data);
       return res.data.stock_code;
     } else {
@@ -47,8 +46,13 @@ const CompanyDetailInfo = ({ corpCode }) => {
 
   // 종목 코드로 주식 정보 검색
   // !!TODO 검색 날짜 파라미터로 만들어서 넘기기
-  // !!TODO 통신중이라 데이터가 비어있는 경우엔 로딩 인디케이터 보여주기
+  // !!TODO api 컴포넌트 분리하기
+  // !!TODO Type 지정하기
+  // !!TODO ui 짜기
+  // !!TODO 수치 시각화하기
 
+
+  // 공공데이터 금융위원회_주식시세정보 조회
   const getStockPrice = async (stockCode) => {
     try {
       const date = "20230525";
@@ -72,7 +76,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
       const currDate = new Date();
       const curryear = currDate.getFullYear();
       let currmonth;
-      if (currDate.getMonth() < 9) {
+      if (currDate.getMonth() < 10) {
         currmonth = `0${currDate.getMonth() + 1}`;
       } else {
         currmonth = currDate.getMonth() + 1;
@@ -86,7 +90,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
 
   return (
     <Container>
-      {/* renderData가 있는 경우에만 render되도록 => 안하면 에러발생함 */}
+      {/* renderData가 있는 경우에만 render되도록  */}
       {renderData && (
         <>
           <Item>{renderData?.adres}</Item>
@@ -99,7 +103,18 @@ const CompanyDetailInfo = ({ corpCode }) => {
       )}
 
       {renderData && renderDeatilData ? (
-        <StockPrice>{renderDeatilData?.mkp}원</StockPrice>
+        <>
+          {/* 시가 */}
+          <StockPrice>{renderDeatilData?.mkp}원</StockPrice>
+          {/* 전일대비 등락 */}
+          <StockPrice>{renderDeatilData?.vs}원</StockPrice>
+          {/* 가격 최고치 */}
+          <StockPrice>{renderDeatilData?.hipr}원</StockPrice>
+          {/* 가격 최저치 */}
+          <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
+          {/* 시가총액 */}
+          <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
+        </>
       ) : (
         <div>
           <Indicator />

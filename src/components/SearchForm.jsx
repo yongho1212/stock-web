@@ -2,6 +2,12 @@ import React, { useState } from "react";
 
 import SearchResult from './SearchResult';
 
+import styled from "styled-components";
+
+import {IoSearchCircleOutline} from 'react-icons/io5';
+
+
+
 
 const SearchForm = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,9 +81,11 @@ const SearchForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input type="text" value={searchTerm} onChange={handleInputChange} />
-        <button type="submit">검색</button>
+      <form onSubmit={handleSubmit} style={{display: 'flex', justifyContent: 'center'}}>
+        <StockNameInput type="text" value={searchTerm} onChange={handleInputChange} />
+        <StockSearchBtn type="submit">
+          <IoSearchCircleOutline size={40}/>
+        </StockSearchBtn>
       </form>
       <div>
         {searchResults.map((company, index) => (
@@ -89,3 +97,19 @@ const SearchForm = () => {
 }
 
 export default SearchForm;
+
+const StockNameInput = styled.input`
+  width: 300px;
+  height: 40px;
+  border: 3px solid #33ff33;
+  border-radius: 9px;
+`
+
+const StockSearchBtn = styled.button`
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  color: #33ff33;
+  cursor: pointer;
+`
