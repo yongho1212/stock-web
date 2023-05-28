@@ -9,6 +9,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
   const apiKey = process.env.REACT_APP_DART_API_KEY;
+  const publicdatakey= process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
   // 마운트 될 때
   // !! TODO 언마운트 시점에 clear함수 적용하기
@@ -47,17 +48,16 @@ const CompanyDetailInfo = ({ corpCode }) => {
   // 종목 코드로 주식 정보 검색
   // !!TODO 검색 날짜 파라미터로 만들어서 넘기기
   // !!TODO 통신중이라 데이터가 비어있는 경우엔 로딩 인디케이터 보여주기
-  //
+
   const getStockPrice = async (stockCode) => {
     try {
       const date = "20230525";
       // const date = await getDateToString();
       console.log(date);
-      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=${date}&likeSrtnCd=${stockCode}`;
+      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${date}&likeSrtnCd=${stockCode}`;
       const res = await axios.get(url);
       console.log(res);
       const resData = res?.data?.response?.body?.items?.item[0];
-
       console.log(resData);
       setRenderDetialData(resData);
       return resData;
@@ -86,7 +86,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
 
   return (
     <Container>
-      {/* 이거 정말 중요해요!! 까먹지 마세여 */}
+      {/* renderData가 있는 경우에만 render되도록 => 안하면 에러발생함 */}
       {renderData && (
         <>
           <Item>{renderData?.adres}</Item>
