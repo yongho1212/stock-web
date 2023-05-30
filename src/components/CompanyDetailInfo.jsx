@@ -56,13 +56,12 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const getStockPrice = async (stockCode) => {
     try {
       const date = "20230525";
-      // const date = await getDateToString();
-      console.log(date);
+      
       const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${date}&likeSrtnCd=${stockCode}`;
       const res = await axios.get(url);
-      console.log(res);
+      
       const resData = res?.data?.response?.body?.items?.item[0];
-      console.log(resData);
+      
       setRenderDetialData(resData);
       return resData;
     } catch (err) {

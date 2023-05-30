@@ -1,19 +1,45 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './SearchResult.scss'
+
 import {searchByCoprCode} from '../apis/individual'
 import { Link } from 'react-router-dom';
+
+import styled from "styled-components";
 
 const SearchResult = ({ company }) => {
 
     return (
-      <Link to={`/companydetail/${company.corp_code[0]}`}>
-        <div className='searchResultCtnr' > 
+      <SearchResultCtnr>
+      <Link to={`/companydetail/${company.corp_code[0]}`} style={{textDecoration: 'none', color: 'black'}}>
+        <SearchResultItem className='searchResultCtnr' > 
           <h3>{company.corp_name}</h3>
-          <p>코드: {company.corp_code}</p>
-        </div>
+          
+          <p>코드: {company.stock_code}</p>
+          
+          
+        </SearchResultItem>
       </Link>
+      </SearchResultCtnr>
     );
   }
 
 export default SearchResult;
+
+const SearchResultCtnr = styled.div`
+
+width: 350px;
+text-decoration: none;
+
+
+`
+
+
+const SearchResultItem = styled.div`
+    border: 2px solid #666;
+    border-radius: 10px;
+    margin:10px 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 10px;
+    align-items: center;
+`
