@@ -1,51 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import SearchResult from "./SearchResult";
+import useDebounce from "../hooks/useDebounce";
 
-import styled from "styled-components";
+import {fetchIndexedDB} from "../apis/fetchIndexedDB";
 
 import { IoSearchCircleOutline } from "react-icons/io5";
 
-const SearchForm = () => {
-  // !! TODO 타이핑을 하면 실시간으로 추천 검색어를 보여주고 싶음
-  // setSearchResults를 setTimeout으로 설정해 두면 렉 안걸리지 않을까
-  // 타이핑을 멈추는 시점에
-
-  // !! debounce => 공부
-  // 스로틀 
-  
+const SearchForm = () => {  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  console.log(searchResults)
+  // 디바운스 시점에 통신 시작
+  // handle change시점으로 하면 안될거같음
 
+  // 추천 종목을 눌렀을 때나
+  // 
 
+  const debounced = useDebounce(searchTerm, 500);
+  console.log("debounced: ", debounced);
 
-  const fetchIndexedDB = async () => {
-    const openRequest = indexedDB.open("myDatabase", 1);
-
-    return new Promise((resolve, reject) => {
-      openRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(["companies"], "readonly");
-        const objectStore = transaction.objectStore("companies");
-        const readAllRequest = objectStore.getAll();
-
-        readAllRequest.onsuccess = function (event) {
-          resolve(event.target.result);
-        };
-
-        readAllRequest.onerror = function (event) {
-          reject(event);
-        };
-      };
-
-      openRequest.onerror = function (event) {
-        reject(event);
-      };
-    });
-  };
+  useEffect(() => {
+    getSearchResult(debounced);
+    console.log("searchResult: ", debounced);
+  },[debounced])
+  
 
   const filterCompanyName = (keyword, data) => {
     const results = [];
@@ -67,9 +48,27 @@ const SearchForm = () => {
     return { results, relatedKeywords: Array.from(relatedKeywords) };
   };
 
+  const getSearchResult = async(debounced) => {
+    // 얼리 리턴으로 바꾸는 편이 나음
+    if (debounced?.length >= 2){
+      try {
+        const indexedDBData = await fetchIndexedDB();
+        const { results: filteredResults, relatedKeywords } = filterCompanyName(
+          debounced,
+          indexedDBData
+        );
+        setSearchResults(filteredResults);
+        console.log("연관 검색어: ", relatedKeywords); // 연관 검색어 출력
+      } catch (error) {
+        console.error("IndexedDB 요청 중 오류가 발생했습니다: ", error);
+      }
+    };
+  }
+
   const handleInputChange = async (event) => {
+    event.preventDefault();
     setSearchTerm(event.target.value);
-  };
+    }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -87,6 +86,7 @@ const SearchForm = () => {
   };
 
   // !!TODO 검색 결과 단기 저장을 통해 이전화면으로 넘어갔을 때 그대로 남아있게 하기
+  // 입력 => 디바운스 => 결과렌더링
 
   return (
     

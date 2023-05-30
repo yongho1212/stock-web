@@ -27,6 +27,7 @@ const openDB = () => {
   });
 };
 
+// DB에 회사명-코드가 있는지 확인
 export const dbChecker = async() => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
