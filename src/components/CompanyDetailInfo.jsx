@@ -6,12 +6,49 @@ import { searchByCoprCode } from "../apis/individual";
 import { getStockPrice } from "../apis/getDetailInfo";
 //cmpts
 import Indicator from "../components/common/Indicator";
+import StockChart from "./chart/StockChart";
+
+import { useSelector } from "react-redux";
+
+
 
 const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
+  const [dateData, setDateData] = useState([]); 
   const apiKey = process.env.REACT_APP_DART_API_KEY;
   const publicdatakey= process.env.REACT_APP_PUBLIC_DATA_API_KEY
+
+  const days = useSelector((state) => state.dates);
+  console.log(days)
+
+  const stockData = [
+    { date: "2022-01-01", price: 100 },
+    { date: "2022-01-02", price: 110 },
+    { date: "2022-01-03", price: 95 },
+    { date: "2022-01-04", price: 120 },
+    { date: "2022-01-05", price: 105 },
+    { date: "2022-01-06", price: 130 },
+    { date: "2022-01-07", price: 115 },
+    { date: "2022-01-10", price: 150 },
+    { date: "2022-01-11", price: 200 },
+    { date: "2022-01-12", price: 120 },
+    { date: "2022-01-13", price: 105 },
+    { date: "2022-01-14", price: 130 },
+    { date: "2022-01-15", price: 115 },
+    { date: "2022-01-16", price: 120 },
+  ];
+
+  const currDateFiftyTwo = []
+
+  // !! TODO 날짜 관련 함수 적용 
+
+  // 공공데이터 api로 공휴일이 아닌 날짜만 받아서 
+  
+  // 각 날짜에 대한 가격을 { date / price } 형태로 배열에 저장
+
+
+
 
   // 마운트 될 때
   // !! TODO 언마운트 시점에 clear함수 적용하기
@@ -119,6 +156,8 @@ const CompanyDetailInfo = ({ corpCode }) => {
           <Indicator />
         </div>
       )}
+            
+
     </Container>
   );
 };

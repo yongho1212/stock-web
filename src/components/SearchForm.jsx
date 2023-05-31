@@ -19,13 +19,12 @@ const SearchForm = () => {
   // 추천 종목을 눌렀을 때나
   // 
 
-  const debounced = useDebounce(searchTerm, 500);
-  console.log("debounced: ", debounced);
+  const debouncedKeyword = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    getSearchResult(debounced);
-    console.log("searchResult: ", debounced);
-  },[debounced])
+    getSearchResult(debouncedKeyword);
+    console.log("searchResult: ", debouncedKeyword);
+  },[debouncedKeyword])
   
 
   const filterCompanyName = (keyword, data) => {
@@ -48,13 +47,13 @@ const SearchForm = () => {
     return { results, relatedKeywords: Array.from(relatedKeywords) };
   };
 
-  const getSearchResult = async(debounced) => {
+  const getSearchResult = async(debouncedKeyword) => {
     // 얼리 리턴으로 바꾸는 편이 나음
-    if (debounced?.length >= 2){
+    if (debouncedKeyword?.length >= 2){
       try {
         const indexedDBData = await fetchIndexedDB();
         const { results: filteredResults, relatedKeywords } = filterCompanyName(
-          debounced,
+          debouncedKeyword,
           indexedDBData
         );
         setSearchResults(filteredResults);

@@ -1,11 +1,26 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import Main from './pages/Main';
-import {downloadZip, dbChecker} from './apis/initapi';
 
+import {downloadZip, dbChecker} from './apis/initapi';
+import {getWeekdaysLast52WeeksWithoutHolidays} from './apis/getDateInfo';
+
+import { useDispatch } from 'react-redux';
+import { setDays } from './state/date/dateSlice'
 
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
+
+  useEffect(() => {
+    async function fetchDate(){
+      const dates = await getWeekdaysLast52WeeksWithoutHolidays(apikey);
+      dispatch(setDays(dates));
+    }
+    fetchDate();
+  },[])
 
   // !!TODO checker가 PENDING 상태일 때 INDICATOR RENDER
 
