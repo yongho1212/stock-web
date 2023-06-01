@@ -50,7 +50,6 @@ export const getWeekdaysLast52WeeksWithoutHolidays = async (apikey) => {
     const publicHolidaysLastYear = await getPublicHolidays(lastYear, apikey);
     const publicHolidays = publicHolidaysCurrYear.concat(publicHolidaysLastYear);
 
-    
     const weekdaysWithoutHolidays = weekdays.filter((date) => !publicHolidays.includes(date));
     return weekdaysWithoutHolidays;
   } catch (err) {

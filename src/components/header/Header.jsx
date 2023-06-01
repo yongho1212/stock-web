@@ -1,6 +1,7 @@
 import React from 'react'
 
 import SearchForm from '../SearchForm'
+import KakaoLogin from '../auth/KakaoLogin'
 
 import { styled } from 'styled-components'
 
@@ -10,6 +11,7 @@ const Header = () => {
   return (
     <HeaderContainer>
         <SearchForm />
+        <KakaoLogin />
     </HeaderContainer>
   )
 }
