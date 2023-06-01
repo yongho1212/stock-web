@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 
 import SearchResult from "./SearchResult";
@@ -8,10 +8,15 @@ import {fetchIndexedDB} from "../apis/fetchIndexedDB";
 
 import { IoSearchCircleOutline } from "react-icons/io5";
 
+
 const SearchForm = () => {  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const ref = useRef();
+  const searchResultArea = useRef(null);
 
   // 디바운스 시점에 통신 시작
   // handle change시점으로 하면 안될거같음
@@ -48,6 +53,9 @@ const SearchForm = () => {
   };
 
   const getSearchResult = async(debouncedKeyword) => {
+    if (debouncedKeyword?.length == 0){
+      setSearchResults([]);
+    }
     // 얼리 리턴으로 바꾸는 편이 나음
     if (debouncedKeyword?.length >= 2){
       try {
@@ -87,12 +95,49 @@ const SearchForm = () => {
   // !!TODO 검색 결과 단기 저장을 통해 이전화면으로 넘어갔을 때 그대로 남아있게 하기
   // 입력 => 디바운스 => 결과렌더링
 
+  // const handleOutsideClick = (event) => {
+  //   console.log(openDrawer)
+  //   if (ref.current && !ref.current.contains(event.target)) { 
+  //     setOpenDrawer(false);
+  //     console.log("cdn1")
+  //   } else {
+  //     setOpenDrawer(true);
+  //     console.log("cdn2")
+  //   }
+  // }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpenDrawer(false);
+      }
+    };
+
+    // 클릭 이벤트가 발생했을 때 handleClickOutside 함수를 실행합니다.
+    document.addEventListener('click', handleClickOutside);
+
+    // 컴포넌트가 사라질 때 이벤트 리스너를 제거합니다.
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [ref]);
+
+  
+
   return (
     
-      <SearchFormContainer>
+      <SearchFormContainer
+        ref={ref}
+        // onClick={handleOutsideClick}
+        // onClick={(e)=>e.stopPropagation()}
+      >
         <form onSubmit={handleSubmit} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
           <StockNameInput
             type="text"
+            // 이벤트 버블링 막음 => 이벤트 전파
+            
+            onFocus={() => setOpenDrawer(true)}
+            
             value={searchTerm}
             onChange={handleInputChange}
           />
@@ -100,14 +145,18 @@ const SearchForm = () => {
             <IoSearchCircleOutline size={40} />
           </StockSearchBtn>
         </form>
-        
-          <SearchResultsContainer>
+
+        {openDrawer &&
+          <SearchResultsContainer
+            
+          >
             <SearchResultsList>
               {searchResults.map((company, index) => (
                 <SearchResult key={index} company={company} />
               ))}
             </SearchResultsList>
           </SearchResultsContainer>
+        }
         
       </SearchFormContainer>
     
@@ -121,7 +170,9 @@ const SearchFormContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin-top: 20px;
+  background-color: aqua;
+  width: 500px;
+  
   
 `;
 
@@ -142,9 +193,15 @@ const StockSearchBtn = styled.button`
 `;
 
 const SearchResultsContainer = styled.div`
-  margin-top: 10px;
-  
-  
+  z-index: 999;
+  height: 500px;
+  width: 500px;
+  background-color: aliceblue;
+  overflow-y: scroll;
+  position: absolute;
+  top: 50px;
+  left: 110px;
+
 `;
 
 const SearchResultsList = styled.ul`

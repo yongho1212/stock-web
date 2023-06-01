@@ -8,8 +8,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { Provider } from 'react-redux';
-import  store  from './state/store';
+import store from './state/store';
 import CompanyDetail from './pages/CompanyDetail';
+import Header from './components/header/Header'
 
 
 const router = createBrowserRouter([
@@ -30,7 +31,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.Fragment>
     <Provider store={store} >
-    <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </Provider>
   </React.Fragment>
 );

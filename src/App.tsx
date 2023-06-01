@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import Main from './pages/Main';
+import Header from './components/header/Header'
 
 import {downloadZip, dbChecker} from './apis/initapi';
 import {getWeekdaysLast52WeeksWithoutHolidays} from './apis/getDateInfo';
@@ -37,6 +38,7 @@ const App = () => {
 
   return (
     <>
+      <Header />
       <Main />
     </>
   );
