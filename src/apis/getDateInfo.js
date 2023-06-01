@@ -16,30 +16,33 @@ const getPublicHolidays = async (year, apikey) => {
 
 
 //최근 52주 내 평일 
-const getWeekdaysLast52Weeks = () => {
-    const today = new Date();
-    const last52Weeks = [];
-  
-    for (let i = 0; i < 52 * 7; i++) {
-      const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-      // 주말을 건너뛰고 평일만 추가합니다. (일요일은 0, 토요일은 6)
-      if (day.getDay() !== 0 && day.getDay() !== 6) {
-        // 날짜를 YYYYMMDD 형식으로 변경합니다.
-        const formattedDate = [
-          day.getFullYear(),
-          ("0" + (day.getMonth() + 1)).slice(-2),
-          ("0" + day.getDate()).slice(-2),
-        ].join("");
-        last52Weeks.push(formattedDate);
-      }
+const getWeekdaysLast260Days = () => {
+  const today = new Date();
+  const last260DaysWeekdays = [];
+  let weekdaysCounter = 0;
+
+  for (let i = 0; weekdaysCounter < 260; i++) {
+    const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+    // 주말을 건너뛰고 평일만 추가합니다. (일요일은 0, 토요일은 6)
+    if (day.getDay() !== 0 && day.getDay() !== 6) {
+      // 날짜를 YYYYMMDD 형식으로 변경합니다.
+      const formattedDate = [
+        day.getFullYear(),
+        ("0" + (day.getMonth() + 1)).slice(-2),
+        ("0" + day.getDate()).slice(-2),
+      ].join("");
+      last260DaysWeekdays.push(formattedDate);
+      weekdaysCounter++;
     }
-  
-    return last52Weeks;
-  };
+  }
+
+  return last260DaysWeekdays;
+};
+
 
 export const getWeekdaysLast52WeeksWithoutHolidays = async (apikey) => {
   try {
-    const weekdays = getWeekdaysLast52Weeks();
+    const weekdays = getWeekdaysLast260Days();
     const currYear = new Date().getFullYear();
     const lastYear = currYear - 1;
 
