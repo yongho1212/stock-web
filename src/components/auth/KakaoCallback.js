@@ -2,10 +2,14 @@ import React, { useEffect } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import { useDispatch } from 'react-redux';
+import { login } from '../../state/auth/authSlice';
+
+
 
 
 const KakaoCallback = () => {
-
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const params = new URL(document.location.toString()).searchParams;
     const code = params.get('code');
@@ -21,6 +25,7 @@ const KakaoCallback = () => {
                 }
             })
             sessionStorage.setItem('access_token',token.data.access_token);
+            dispatch(login())
             navigate('/');
         } catch(e){
             console.log(e);

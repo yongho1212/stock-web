@@ -5,9 +5,16 @@ import KakaoLogin from '../auth/KakaoLogin'
 
 import { styled } from 'styled-components'
 
+import { useSelector } from 'react-redux'
+
+
 
 
 const Header = () => {
+
+  const authState = useSelector(state => state.auth)
+  console.log(authState)
+
   return (
     <HeaderContainer>
         <SearchForm />
