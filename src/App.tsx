@@ -16,6 +16,7 @@ const App = () => {
   const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
   console.log(sessionStorage.getItem('access_token'))
+  console.log(sessionStorage.getItem('userdata'))
 
   useEffect(() => {
     async function fetchDate(){
