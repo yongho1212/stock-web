@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 import store from './state/store';
 import CompanyDetail from './pages/CompanyDetail';
 import Header from './components/header/Header'
-import KakaoCallback from './components/auth/KakaoCallback';
+import KakaoCallback from './components/auth/kakaoAuth/KakaoCallback';
 
 
 const router = createBrowserRouter([

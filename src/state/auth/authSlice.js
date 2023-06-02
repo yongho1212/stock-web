@@ -12,7 +12,7 @@ export const authSlice = createSlice({
         },
         logout: (state, action) =>{
             // 
-            state.dates = false;
+            state.auth = false;
         }
     }
 })

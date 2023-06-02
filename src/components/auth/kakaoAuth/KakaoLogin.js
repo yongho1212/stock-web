@@ -1,9 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 
-import kakaologinBtn from '../../assets/logos/kakao_login_small.png'
-
-
+import kakaologinBtn from '../../../assets/logos/kakao_login_small.png'
 
 
 const KakaoLogin = () => {
@@ -14,9 +12,6 @@ const KakaoLogin = () => {
     const kakaoLogin = async() => {
         const first = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kapikey}&redirect_uri=${redirectUri}`
         window.location.href = first
-
-        
-
     }
 
 

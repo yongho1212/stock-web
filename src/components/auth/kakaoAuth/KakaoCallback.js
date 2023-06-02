@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { login } from '../../state/auth/authSlice';
+import { login } from '../../../state/auth/authSlice';
 
 
 
@@ -24,6 +24,7 @@ const KakaoCallback = () => {
                     "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
                 }
             })
+            console.log(token);
             sessionStorage.setItem('access_token',token.data.access_token);
             dispatch(login())
             navigate('/');
