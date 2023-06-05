@@ -1,85 +1,92 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
+
 //apis
-import { searchByCoprCode } from "../apis/individual";
-import { getStockPrice } from "../apis/getDetailInfo";
+import { getStockDataFromDart } from "../apis/getStockDataFromDart";
+import { getStockPrice } from "../apis/getStockPrice";
 //cmpts
 import Indicator from "../components/common/Indicator";
 import StockChart from "./chart/StockChart";
 
 import { useSelector } from "react-redux";
 
-
-
 const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
-  const [dateData, setDateData] = useState([]); 
+  const [dateData, setDateData] = useState([]);
   const apiKey = process.env.REACT_APP_DART_API_KEY;
-  const publicdatakey= process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
   const days = useSelector((state) => state.dates);
-  console.log(days)
-
-  const stockData = [
-    { date: "2022-01-01", price: 100 },
-    { date: "2022-01-02", price: 110 },
-    { date: "2022-01-03", price: 95 },
-    { date: "2022-01-04", price: 120 },
-    { date: "2022-01-05", price: 105 },
-    { date: "2022-01-06", price: 130 },
-    { date: "2022-01-07", price: 115 },
-    { date: "2022-01-10", price: 150 },
-    { date: "2022-01-11", price: 200 },
-    { date: "2022-01-12", price: 120 },
-    { date: "2022-01-13", price: 105 },
-    { date: "2022-01-14", price: 130 },
-    { date: "2022-01-15", price: 115 },
-    { date: "2022-01-16", price: 120 },
-  ];
-
-  const currDateFiftyTwo = []
-
-  // !! TODO 날짜 관련 함수 적용 
-
-  // 공공데이터 api로 공휴일이 아닌 날짜만 받아서 
-  
-  // 각 날짜에 대한 가격을 { date / price } 형태로 배열에 저장
-
-
-
+  const currDate = days.dates[1];
 
   // 마운트 될 때
   // !! TODO 언마운트 시점에 clear함수 적용하기
   useEffect(() => {
     callCombinedAPI(corpCode);
     return () => callCombinedAPI(corpCode);
-  },[]);
+  }, []);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
   const callCombinedAPI = async (corpCode) => {
     try {
       // 변수에 할당해서 return값을 다음 함수에 전달
-      const stkCode = await searchByCoprCode(corpCode);
-      await getStockPrice(stkCode);
-      // const stkDetailInfo =
+      const dartData = await getStockDataFromDart(corpCode);
+      const stkCode = dartData.stock_code
+      await setRenderData(dartData);
+      const stkData = await getStockPrice(stkCode, currDate);
+      setRenderDetialData(stkData);
     } catch (error) {
       console.error("Error in callCombinedAPI: ", error);
     }
   };
 
-  // DART 검색
-  const searchByCoprCode = async (corpCode) => {
-    const url = `https://opendart.fss.or.kr/api/company.json?crtfc_key=${apiKey}&corp_code=${corpCode}`;
-    const res = await axios.get(url);
-    if (res) {
-      setRenderData(res.data);
-      return res.data.stock_code;
-    } else {
-      throw new Error("Error in searchByCoprCode");
-    }
-  };
+  // 각 날짜에 대한 주식 가격 정보 받오기
+
+  const chartdata = [
+    {
+      name: "Page A",
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: "Page B",
+      uv: 3000,
+      pv: 1398,
+      amt: 2210,
+    },
+    {
+      name: "Page C",
+      uv: 2000,
+      pv: 9800,
+      amt: 2290,
+    },
+    {
+      name: "Page D",
+      uv: 2780,
+      pv: 3908,
+      amt: 2000,
+    },
+    {
+      name: "Page E",
+      uv: 1890,
+      pv: 4800,
+      amt: 2181,
+    },
+    {
+      name: "Page F",
+      uv: 2390,
+      pv: 3800,
+      amt: 2500,
+    },
+    {
+      name: "Page G",
+      uv: 3490,
+      pv: 4300,
+      amt: 2100,
+    },
+  ];
 
   // 종목 코드로 주식 정보 검색
   // !!TODO 검색 날짜 파라미터로 만들어서 넘기기
@@ -88,41 +95,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
   // !!TODO ui 짜기
   // !!TODO 수치 시각화하기
 
-
-  // 공공데이터 금융위원회_주식시세정보 조회
-  const getStockPrice = async (stockCode) => {
-    try {
-      const date = "20230525";
-      
-      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${date}&likeSrtnCd=${stockCode}`;
-      const res = await axios.get(url);
-      
-      const resData = res?.data?.response?.body?.items?.item[0];
-      
-      setRenderDetialData(resData);
-      return resData;
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  //날짜 string 제조 함수
-  const getDateToString = () => {
-    try {
-      const currDate = new Date();
-      const curryear = currDate.getFullYear();
-      let currmonth;
-      if (currDate.getMonth() < 10) {
-        currmonth = `0${currDate.getMonth() + 1}`;
-      } else {
-        currmonth = currDate.getMonth() + 1;
-      }
-      const currdate = currDate.getDate();
-      return `${curryear}${currmonth}${currdate}`;
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  
 
   return (
     <Container>
@@ -150,14 +123,15 @@ const CompanyDetailInfo = ({ corpCode }) => {
           <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
           {/* 시가총액 */}
           <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
+          <StockChart data={chartdata}/>
         </>
       ) : (
         <div>
           <Indicator />
         </div>
       )}
-            
-
+      
+    
     </Container>
   );
 };
@@ -169,6 +143,7 @@ const Container = styled.div`
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: auto;
 `;
 
 const Item = styled.div`

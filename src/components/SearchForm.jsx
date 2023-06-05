@@ -95,16 +95,6 @@ const SearchForm = () => {
   // !!TODO 검색 결과 단기 저장을 통해 이전화면으로 넘어갔을 때 그대로 남아있게 하기
   // 입력 => 디바운스 => 결과렌더링
 
-  // const handleOutsideClick = (event) => {
-  //   console.log(openDrawer)
-  //   if (ref.current && !ref.current.contains(event.target)) { 
-  //     setOpenDrawer(false);
-  //     console.log("cdn1")
-  //   } else {
-  //     setOpenDrawer(true);
-  //     console.log("cdn2")
-  //   }
-  // }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
