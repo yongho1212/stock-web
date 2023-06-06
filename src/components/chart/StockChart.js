@@ -12,7 +12,9 @@ import {
 
 const StockChart = ({data}) => {
 
-    
+  const minPrice = Math.min(...data.map(item => item.price));
+  const reversedData = [...data].reverse();
+
 
 
   return (
@@ -21,22 +23,23 @@ const StockChart = ({data}) => {
       <LineChart
         width={500}
         height={300}
-        data={data}
+        data={reversedData}
         margin={{
           top: 5,
           right: 30,
-          left: 20,
+          left: 21,
           bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
+        <XAxis dataKey="date" />
+        {/* 최솟값이상만 출력 */}
+        <YAxis domain={['dataMin => (minPrice)', 'auto']} />
         <Tooltip />
         <Legend />
         <Line
           type="monotone"
-          dataKey="pv"
+          dataKey="price"
           stroke="#8884d8"
           activeDot={{ r: 8 }}
         />

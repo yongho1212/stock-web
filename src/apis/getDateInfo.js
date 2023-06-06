@@ -3,8 +3,9 @@ import axios from "axios";
 const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
 //공휴일 받아오기
-const getPublicHolidays = async (year, apikey) => {
+const getPublicHolidays = async (year) => {
   try {
+    const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
     const url = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?solYear=${year}&ServiceKey=${apikey}`;
     const response = await axios.get(url);
     const holidays = response.data.response.body.items.item.map((item) => item.locdate);

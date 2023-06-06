@@ -19,8 +19,9 @@ const App = () => {
   console.log(sessionStorage.getItem('userdata'))
 
   useEffect(() => {
-    async function fetchDate(){
-      const dates = await getWeekdaysLast52WeeksWithoutHolidays(apikey);
+    const fetchDate = async() =>{
+      const dates = await getWeekdaysLast52WeeksWithoutHolidays();
+      console.log(dates)
       dispatch(setDays(dates));
     }
     fetchDate();

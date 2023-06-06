@@ -15,10 +15,61 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
   const [dateData, setDateData] = useState([]);
-  const apiKey = process.env.REACT_APP_DART_API_KEY;
+  const [ad, setad] = useState([])
+  
 
   const days = useSelector((state) => state.dates);
-  const currDate = days.dates[1];
+  const currDate = days.dates[3];
+  const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
+  
+  console.log(currDate)
+  console.log(renderDeatilData)
+
+
+  async function getPriceByEachDay (stkCode, currDate) {
+    return new Promise(async(resolve, reject) => {
+      try{
+
+        const res = await axios.get(`https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`)
+        const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp
+        const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt
+        // console.log(res?.data?.response?.body?.items?.item[0].basDt)
+        if (res) {
+          return resolve({date:eachDate,price:eachPrice})
+        }
+      }catch(e){
+        console.log(e)
+        return reject('')
+      }
+    })  
+  }
+  
+  const allSettledPromises = async(stkCode) => {
+    const promises = days.dates.map((x) => getPriceByEachDay(stkCode, x))
+    const result = []
+    try {
+      const promiseResult = await Promise.allSettled(promises)
+      for (const i of promiseResult) {
+        if (i.status === 'fulfilled') {
+            result.push(i.value); // Add the resolved value if the promise is fulfilled
+        }
+    }
+    } catch (e) {
+      console.error(`error on ${e}`)
+    }
+    setad(result)
+    
+  }
+  
+  
+
+
+
+  useEffect(() => {
+    console.log(ad);
+  }, [ad]);
+
+
 
   // 마운트 될 때
   // !! TODO 언마운트 시점에 clear함수 적용하기
@@ -33,13 +84,53 @@ const CompanyDetailInfo = ({ corpCode }) => {
       // 변수에 할당해서 return값을 다음 함수에 전달
       const dartData = await getStockDataFromDart(corpCode);
       const stkCode = dartData.stock_code
-      await setRenderData(dartData);
+      setRenderData(dartData);
+      console.log(stkCode)
       const stkData = await getStockPrice(stkCode, currDate);
+      console.log(stkData)
       setRenderDetialData(stkData);
+      allSettledPromises(stkCode)
+      
     } catch (error) {
       console.error("Error in callCombinedAPI: ", error);
     }
   };
+
+  // const fetchStockPrices = async (dates) => {
+  //   try {
+  //     const promises = dates.map((date) =>
+  //       axios.get(`https://api.example.com/stock-price?date=${date}`)
+  //     );
+  
+  //     const responseArray = await Promise.allSettled(promises);
+  
+  //     const stockPrices = await Promise.all(
+  //       responseArray.map(async (result) => {
+  //         // 각 요청에 대한 처리를 진행합니다.
+  //         if (result.status === "fulfilled") {
+  //           // 요청이 성공한 경우, JSON 형식으로 변환합니다.
+  //           return await result.value.json();
+  //         } else {
+  //           // 요청이 실패한 경우, 오류를 기록하고 null 반환합니다.
+  //           console.error("Error fetching stock price: ", result.reason);
+  //           return null;
+  //         }
+  //       })
+  //     );
+  
+  //     return stockPrices;
+  //   } catch (error) {
+  //     console.error("Error fetching stock prices: ", error);
+  //     return [];
+  //   }
+  // };
+  
+  // // 사용 방법:
+  // fetchStockPrices(dates).then((prices) => {
+  //   console.log(prices);
+  // });
+  
+  
 
   // 각 날짜에 대한 주식 가격 정보 받오기
 
@@ -123,7 +214,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
           <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
           {/* 시가총액 */}
           <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
-          <StockChart data={chartdata}/>
+          <StockChart data={ad}/>
         </>
       ) : (
         <div>

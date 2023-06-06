@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const SearchResult = ({ company }) => {
-  console.log(company.stock_code)
+  
   return (
     <SearchResultCtnr>
       <Link
