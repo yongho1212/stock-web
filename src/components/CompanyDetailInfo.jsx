@@ -15,61 +15,106 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [renderData, setRenderData] = useState(null);
   const [renderDeatilData, setRenderDetialData] = useState(null);
   const [dateData, setDateData] = useState([]);
-  const [ad, setad] = useState([])
-  
+  const [ad, setad] = useState([]);
 
-  const days = useSelector((state) => state.dates);
-  const currDate = days.dates[3];
+  const days = [
+    "20230619",
+    "20230616",
+    "20230615",
+    "20230614",
+    "20230613",
+    "20230612",
+    "20230609",
+    "20230608",
+    "20230607",
+    "20230606",
+    "20230605",
+    "20230602",
+    "20230601",
+    "20230531",
+    "20230530",
+    "20230529",
+    "20230526",
+    "20230525",
+    "20230524",
+    "20230523",
+    "20230522",
+    "20230519",
+    "20230518",
+    "20230517",
+    "20230516",
+    "20230515",
+    "20230512",
+    "20230511",
+    "20230510",
+    "20230509",
+    "20230508",
+    "20230505",
+    "20230504",
+    "20230503",
+    "20230502",
+    "20230501",
+    "20230428",
+    "20230427",
+    "20230426",
+    "20230425",
+    "20230424",
+    "20230421",
+    "20230420",
+    "20230419",
+    "20230418",
+    "20230417",
+    "20230414",
+    "20230413",
+    "20230412",
+    "20230411",
+  ];
+
+  const currDate = days[1];
   const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
-  
-  console.log(currDate)
-  console.log(renderDeatilData)
 
+  // renderDeatilData안찍힘
+  console.log(renderDeatilData);
 
-  async function getPriceByEachDay (stkCode, currDate) {
-    return new Promise(async(resolve, reject) => {
-      try{
-
-        const res = await axios.get(`https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`)
-        const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp
-        const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt
+  // 이부분 수정해야함
+  async function getPriceByEachDay(stkCode, currDate) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await axios.get(
+          `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`
+        );
+        const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
+        const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
         // console.log(res?.data?.response?.body?.items?.item[0].basDt)
         if (res) {
-          return resolve({date:eachDate,price:eachPrice})
+          return resolve({ date: eachDate, price: eachPrice });
         }
-      }catch(e){
-        console.log(e)
-        return reject('')
+      } catch (e) {
+        console.log(e);
+        return reject("");
       }
-    })  
+    });
   }
-  
-  const allSettledPromises = async(stkCode) => {
-    const promises = days.dates.map((x) => getPriceByEachDay(stkCode, x))
-    const result = []
+
+  const allSettledPromises = async (stkCode) => {
+    const promises = days.map((x) => getPriceByEachDay(stkCode, x));
+    const result = [];
     try {
-      const promiseResult = await Promise.allSettled(promises)
+      const promiseResult = await Promise.allSettled(promises);
       for (const i of promiseResult) {
-        if (i.status === 'fulfilled') {
-            result.push(i.value); // Add the resolved value if the promise is fulfilled
+        if (i.status === "fulfilled") {
+          result.push(i.value); // Add the resolved value if the promise is fulfilled
         }
-    }
+      }
     } catch (e) {
-      console.error(`error on ${e}`)
+      console.error(`error on ${e}`);
     }
-    setad(result)
-    
-  }
-  
-  
-
-
+    setad(result);
+  };
 
   useEffect(() => {
     console.log(ad);
   }, [ad]);
-
-
 
   // 마운트 될 때
   // !! TODO 언마운트 시점에 clear함수 적용하기
@@ -83,14 +128,13 @@ const CompanyDetailInfo = ({ corpCode }) => {
     try {
       // 변수에 할당해서 return값을 다음 함수에 전달
       const dartData = await getStockDataFromDart(corpCode);
-      const stkCode = dartData.stock_code
+      const stkCode = dartData.stock_code;
       setRenderData(dartData);
-      console.log(stkCode)
+      console.log(stkCode);
       const stkData = await getStockPrice(stkCode, currDate);
-      console.log(stkData)
+      console.log(stkData);
       setRenderDetialData(stkData);
-      allSettledPromises(stkCode)
-      
+      allSettledPromises(stkCode);
     } catch (error) {
       console.error("Error in callCombinedAPI: ", error);
     }
@@ -101,9 +145,9 @@ const CompanyDetailInfo = ({ corpCode }) => {
   //     const promises = dates.map((date) =>
   //       axios.get(`https://api.example.com/stock-price?date=${date}`)
   //     );
-  
+
   //     const responseArray = await Promise.allSettled(promises);
-  
+
   //     const stockPrices = await Promise.all(
   //       responseArray.map(async (result) => {
   //         // 각 요청에 대한 처리를 진행합니다.
@@ -117,20 +161,18 @@ const CompanyDetailInfo = ({ corpCode }) => {
   //         }
   //       })
   //     );
-  
+
   //     return stockPrices;
   //   } catch (error) {
   //     console.error("Error fetching stock prices: ", error);
   //     return [];
   //   }
   // };
-  
+
   // // 사용 방법:
   // fetchStockPrices(dates).then((prices) => {
   //   console.log(prices);
   // });
-  
-  
 
   // 각 날짜에 대한 주식 가격 정보 받오기
 
@@ -179,15 +221,6 @@ const CompanyDetailInfo = ({ corpCode }) => {
     },
   ];
 
-  // 종목 코드로 주식 정보 검색
-  // !!TODO 검색 날짜 파라미터로 만들어서 넘기기
-  // !!TODO api 컴포넌트 분리하기
-  // !!TODO Type 지정하기
-  // !!TODO ui 짜기
-  // !!TODO 수치 시각화하기
-
-  
-
   return (
     <Container>
       {/* renderData가 있는 경우에만 render되도록  */}
@@ -214,15 +247,13 @@ const CompanyDetailInfo = ({ corpCode }) => {
           <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
           {/* 시가총액 */}
           <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
-          <StockChart data={ad}/>
+          <StockChart data={ad} />
         </>
       ) : (
         <div>
           <Indicator />
         </div>
       )}
-      
-    
     </Container>
   );
 };

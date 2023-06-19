@@ -9,8 +9,10 @@ const getPublicHolidays = async (year) => {
     const url = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?solYear=${year}&ServiceKey=${apikey}`;
     const response = await axios.get(url);
     const holidays = response.data.response.body.items.item.map((item) => item.locdate);
+    console.log(holidays)
     return holidays;
   } catch (err) {
+    // 에러 발생
     console.log(err);
   }
 };
