@@ -10,6 +10,9 @@ import { useDispatch } from 'react-redux';
 import { setDays } from './state/date/dateSlice'
 
 
+import { Outlet } from 'react-router-dom'
+
+
 const App = () => {
   const dispatch = useDispatch();
 
@@ -42,8 +45,8 @@ const App = () => {
 
   return (
     <>
-      <Header />
-      <Main />
+      <Header/>
+      <Outlet/>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -10,6 +10,7 @@ import {
 import { Provider } from 'react-redux';
 import store from './state/store';
 import CompanyDetail from './pages/CompanyDetail';
+import Main from './pages/Main'
 import Header from './components/header/Header'
 import KakaoCallback from './components/auth/kakaoAuth/KakaoCallback';
 
@@ -18,15 +19,23 @@ const router = createBrowserRouter([
     {
       path: "/",
       element: <App />,
-    },
-    {
-      path: "/companydetail/:id",
-      element: <CompanyDetail />,
-    },
-    {
-      path: "/auth/kakao/callback",
-      element: <KakaoCallback />,
-    }
+      // errorElement: <ErrorPage />,
+    
+    children: [
+      {
+        path:"/",
+        element:<Main/>
+      },
+      {
+        path: "/companydetail/:id",
+        element: <CompanyDetail />,
+      },
+      {
+        path: "/auth/kakao/callback",
+        element: <KakaoCallback />,
+      }
+    ]
+  }
 ])
 
 

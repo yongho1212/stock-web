@@ -42,7 +42,7 @@ const StockChart = ({ data }) => {
 
     // 중간에 값이 비어있는 경우 이어붙이기
     for (let i = 1; i < filledData.length - 1; i++) {
-      if (filledData[i].price === null || filledData[i].price == '' || filledData[i].price == undefined) {
+      if ( filledData[i].price == undefined) {
         filledData[i].price = filledData[i - 1].price;
       }
     }
