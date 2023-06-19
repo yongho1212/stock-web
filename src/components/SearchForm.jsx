@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import SearchResult from "./SearchResult";
 import useDebounce from "../hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { setToggleState } from "../state/searchtoggle/searchToggleSlice";
 
 import {fetchIndexedDB} from "../apis/fetchIndexedDB";
 
@@ -15,6 +17,12 @@ const SearchForm = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [openDrawer, setOpenDrawer] = useState(false);
 
+  const toggleState = useSelector((state) => state.toggleState);
+
+console.log(toggleState.toggleState)
+  const dispatch = useDispatch();
+  
+
   const ref = useRef();
   const searchResultArea = useRef(null);
 
@@ -25,11 +33,27 @@ const SearchForm = () => {
   // 
 
   const debouncedKeyword = useDebounce(searchTerm, 500);
+    useEffect(() => {
+      getSearchResult(debouncedKeyword);
+      console.log("searchResult: ", debouncedKeyword);
+    },[debouncedKeyword])
 
   useEffect(() => {
-    getSearchResult(debouncedKeyword);
-    console.log("searchResult: ", debouncedKeyword);
-  },[debouncedKeyword])
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        // setOpenDrawer(false);
+        dispatch(setToggleState(false));
+      }
+    };
+
+    // 클릭 이벤트가 발생했을 때 handleClickOutside 함수를 실행합니다.
+    document.addEventListener('click', handleClickOutside);
+
+    // 컴포넌트가 사라질 때 이벤트 리스너를 제거합니다.
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [ref]);
   
 
   const filterCompanyName = (keyword, data) => {
@@ -96,21 +120,7 @@ const SearchForm = () => {
   // 입력 => 디바운스 => 결과렌더링
 
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setOpenDrawer(false);
-      }
-    };
 
-    // 클릭 이벤트가 발생했을 때 handleClickOutside 함수를 실행합니다.
-    document.addEventListener('click', handleClickOutside);
-
-    // 컴포넌트가 사라질 때 이벤트 리스너를 제거합니다.
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [ref]);
 
   
 
@@ -121,12 +131,12 @@ const SearchForm = () => {
         // onClick={handleOutsideClick}
         // onClick={(e)=>e.stopPropagation()}
       >
-        <form onSubmit={handleSubmit} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+        <form onSubmit={handleSubmit} style={{display: "flex", justifyContent: "center", alignItems: "center", width:'92%'}}>
           <StockNameInput
             type="text"
             // 이벤트 버블링 막음 => 이벤트 전파
             
-            onFocus={() => setOpenDrawer(true)}
+            onFocus={() => dispatch(setToggleState(true))}
             
             value={searchTerm}
             onChange={handleInputChange}
@@ -136,15 +146,15 @@ const SearchForm = () => {
           </StockSearchBtn>
         </form>
 
-        {openDrawer &&
-          <SearchResultsContainer
-            
-          >
+        {/* 맨처음에 누르는 회사의 기업코드가 남아있는것 같음 */}
+        {toggleState.toggleState &&
+          <SearchResultsContainer>
             <SearchResultsList>
               {searchResults.map((company, index) => (
                 <SearchResult key={index} company={company} />
               ))}
             </SearchResultsList>
+            <FadeEffect />
           </SearchResultsContainer>
         }
         
@@ -161,13 +171,12 @@ const SearchFormContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   background-color: aqua;
-  width: 500px;
-  
-  
+  width: 55%;
+  height: 60px;
 `;
 
 const StockNameInput = styled.input`
-  width: 300px;
+  width: 90%;
   height: 40px;
   border: 3px solid #33ff33;
   border-radius: 9px;
@@ -182,18 +191,35 @@ const StockSearchBtn = styled.button`
   cursor: pointer;
 `;
 
+
+
 const SearchResultsContainer = styled.div`
   z-index: 999;
-  height: 500px;
-  width: 500px;
+  height: 550px;
+  width: 55%;
+  top: 60px;
   background-color: aliceblue;
   overflow-y: scroll;
   position: absolute;
-  top: 50px;
-  left: 110px;
+
+  border: 1px solid #8b8b8b;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 
 `;
 
-const SearchResultsList = styled.ul`
+const FadeEffect = styled.div`
+  position: sticky;
   
+  bottom: 0;
+  width: 100%;
+  height: 25%; // 원하는 높이에 맞게 조절
+  background-image: linear-gradient(to top, rgba(255, 255, 255, 0), transparent);
+  pointer-events: none; // 흐림 효과가 있는 부분 클릭 시 스크롤 가능하도록
+`;
+
+
+const SearchResultsList = styled.ul`
+    padding-left: 0px;
+    margin: 10px 0px;
 `;

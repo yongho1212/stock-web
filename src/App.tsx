@@ -10,10 +10,12 @@ import { useDispatch } from 'react-redux';
 import { setDays } from './state/date/dateSlice'
 
 
-import { Outlet } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 
 
 const App = () => {
+  const { id } = useParams();
+
   const dispatch = useDispatch();
 
   const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
@@ -44,10 +46,10 @@ const App = () => {
   },[])
 
   return (
-    <>
+    <div key={id}>
       <Header/>
       <Outlet/>
-    </>
+      </div>
   );
 }
 

@@ -11,7 +11,6 @@ export const authSlice = createSlice({
             state.auth = true;
         },
         logout: (state, action) =>{
-            // 
             state.auth = false;
         }
     }

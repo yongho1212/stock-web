@@ -1,5 +1,7 @@
 import React from 'react'
 
+
+import MainLogo from '../common/MainLogo'
 import SearchForm from '../SearchForm'
 import KakaoLogin from '../auth/kakaoAuth/KakaoLogin'
 import KakaoLogout from '../auth/kakaoAuth/KakaoLogout'
@@ -14,13 +16,20 @@ import { useSelector } from 'react-redux'
 const Header = () => {
 
   const authState = useSelector(state => state.auth)
-  console.log(authState)
+  console.log(authState.auth)
+  const authCheck = authState.auth
 
   return (
     <HeaderContainer>
+        <MainLogo/>
         <SearchForm />
-        <KakaoLogin />
+        {authCheck ?
         <KakaoLogout />
+        :
+        <KakaoLogin />
+        }
+        
+        
     </HeaderContainer>
   )
 }
@@ -32,7 +41,8 @@ const HeaderContainer = styled.div`
     z-index: 999;
     background-color: red;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    
 `
 
