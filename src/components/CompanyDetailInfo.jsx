@@ -17,65 +17,15 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [dateData, setDateData] = useState([]);
   const [ad, setad] = useState([]);
 
-  const dates = useSelector((state) => state.dates.dates)
+  const datesdata = useSelector((state) => state.dates.dates)
 
-  console.log(dates)
+  console.log(datesdata)
   console.log(ad)
 
-  const days = [
-    "20230619",
-    "20230616",
-    "20230615",
-    "20230614",
-    "20230613",
-    "20230612",
-    "20230609",
-    "20230608",             
-    "20230607",
-    "20230606",
-    "20230605",
-    "20230602",
-    "20230601",
-    "20230531",
-    "20230530",
-    "20230529",
-    "20230526",
-    "20230525",
-    "20230524",
-    "20230523",
-    "20230522",
-    "20230519",
-    "20230518",
-    "20230517",
-    "20230516",
-    "20230515",
-    "20230512",
-    "20230511",
-    "20230510",
-    "20230509",
-    "20230508",
-    "20230505",
-    "20230504",
-    "20230503",
-    "20230502",
-    "20230501",
-    "20230428",
-    "20230427",
-    "20230426",
-    "20230425",
-    "20230424",
-    "20230421",
-    "20230420",
-    "20230419",
-    "20230418",
-    "20230417",
-    "20230414",
-    "20230413",
-    "20230412",
-    "20230411",
-  ];
 
-  const currDate = days[1];
+  const currDate = datesdata[2];
+
+
   const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
 
   // renderDeatilData안찍힘
@@ -102,7 +52,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
   }
 
   const allSettledPromises = async (stkCode) => {
-    const promises = days.map((x) => getPriceByEachDay(stkCode, x));
+    const promises = datesdata?.map((x) => getPriceByEachDay(stkCode, x));
     const result = [];
     try {
       const promiseResult = await Promise.allSettled(promises);
