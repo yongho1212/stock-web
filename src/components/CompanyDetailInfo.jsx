@@ -17,14 +17,9 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [dateData, setDateData] = useState([]);
   const [ad, setad] = useState([]);
 
-  const datesdata = useSelector((state) => state.dates.dates)
-
-  console.log(datesdata)
-  console.log(ad)
-
+  const datesdata = useSelector((state) => state.dates.dates);
 
   const currDate = datesdata[2];
-
 
   const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
 
@@ -131,79 +126,54 @@ const CompanyDetailInfo = ({ corpCode }) => {
 
   // 각 날짜에 대한 주식 가격 정보 받오기
 
-  const chartdata = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
-
   return (
     <Container>
       {/* renderData가 있는 경우에만 render되도록  */}
       {renderData && (
-        <>
-          <Item>{renderData?.adres}</Item>
-          <Item>{renderData?.corp}</Item>
-          <Item>{renderData?.corp_name}</Item>
-          <Item>{renderData?.corp_name_eng}</Item>
-          <Item>{renderData?.stock_name}</Item>
-          <Item>{renderData?.stock_code}</Item>
-        </>
+        <FirstRowCtnr>
+          <FirstRowLeft>
+            <Item style={{fontSize:'25px', fontWeight:'bold'}}>{renderData?.stock_name}</Item>
+            <Item style={{ fontWeight:'bold'}}>{renderData?.stock_code}</Item>
+          </FirstRowLeft>
+          <FirtstRowRight>
+            <Item>{renderData?.corp_name}</Item>
+            <Item>{renderData?.corp_name_eng}</Item>
+            <Item>{renderData?.adres}</Item>
+            <Item>{renderData?.corp}</Item>
+            <Item><a href={renderData?.hm_url}>{renderData?.hm_url}</a></Item>
+          </FirtstRowRight>
+        </FirstRowCtnr>
       )}
 
       {renderData && renderDeatilData ? (
-        <>
-          {/* 시가 */}
-          <StockPrice>{renderDeatilData?.mkp}원</StockPrice>
-          {/* 전일대비 등락 */}
-          <StockPrice>{renderDeatilData?.vs}원</StockPrice>
-          {/* 가격 최고치 */}
-          <StockPrice>{renderDeatilData?.hipr}원</StockPrice>
-          {/* 가격 최저치 */}
-          <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
-          {/* 시가총액 */}
-          <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
+        <PriceContainer>
+          <PriceCard>
+            <PriceLabel>시가</PriceLabel>
+            <StockPrice>{renderDeatilData?.mkp}원</StockPrice>
+          </PriceCard>
+
+          <PriceCard>
+            <PriceLabel>전일대비 등락</PriceLabel>
+            <StockPrice>{renderDeatilData?.vs}원</StockPrice>
+          </PriceCard>
+
+          <PriceCard>
+            <PriceLabel>가격 최고치</PriceLabel>
+            <StockPrice>{renderDeatilData?.hipr}원</StockPrice>
+          </PriceCard>
+
+          <PriceCard>
+            <PriceLabel>가격 최저치</PriceLabel>
+            <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
+          </PriceCard>
+
+          <PriceCard>
+            <PriceLabel>시가총액</PriceLabel>
+            <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
+          </PriceCard>
+
           <StockChart data={ad} />
-        </>
+        </PriceContainer>
       ) : (
         <div>
           <Indicator />
@@ -221,11 +191,64 @@ const Container = styled.div`
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: auto;
+  margin-bottom: 20px;
+`;
+
+const FirstRowCtnr = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 55px;
+  
+`;
+
+const FirstRowLeft = styled.div`
+  flex: 1;
+  margin-right: 20px;
+
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const FirtstRowRight = styled.div`
+  flex: 1;
+  margin-left: 20px;
+
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const Item = styled.div`
   margin-bottom: 10px;
   font-size: 16px;
+  font-weight: 500;
+`;
+
+const PriceContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const PriceCard = styled.div`
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-grow: 1;
+  text-align: center;
+`;
+
+const PriceLabel = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+  margin-bottom: 5px;
 `;
 
 const StockPrice = styled.div`
