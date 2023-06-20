@@ -17,6 +17,11 @@ const CompanyDetailInfo = ({ corpCode }) => {
   const [dateData, setDateData] = useState([]);
   const [ad, setad] = useState([]);
 
+  const dates = useSelector((state) => state.dates.dates)
+
+  console.log(dates)
+  console.log(ad)
+
   const days = [
     "20230619",
     "20230616",
@@ -25,7 +30,7 @@ const CompanyDetailInfo = ({ corpCode }) => {
     "20230613",
     "20230612",
     "20230609",
-    "20230608",
+    "20230608",             
     "20230607",
     "20230606",
     "20230605",

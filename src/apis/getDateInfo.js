@@ -24,7 +24,7 @@ const getWeekdaysLast260Days = () => {
   const last260DaysWeekdays = [];
   let weekdaysCounter = 0;
 
-  for (let i = 0; weekdaysCounter < 260; i++) {
+  for (let i = 0; weekdaysCounter < 50; i++) {
     const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
     // 주말을 건너뛰고 평일만 추가합니다. (일요일은 0, 토요일은 6)
     if (day.getDay() !== 0 && day.getDay() !== 6) {

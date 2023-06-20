@@ -8,7 +8,7 @@ export const dateSlice = createSlice({
     },
     reducers: {
         setDays: (state, action) =>{
-            state.dates = state.dates.concat(action.payload);
+            state.dates = action.payload;
         },
         clearDays: (state, action) =>{
             // 
