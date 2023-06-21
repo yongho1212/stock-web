@@ -1,27 +1,27 @@
 import axios from "axios";
 
-const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
 //공휴일 받아오기
-const getPublicHolidays = async (year) => {
+const getPublicHolidays = async (year: string) : Promise<Array<string>> => {
   try {
     const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
     const url = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?solYear=${year}&ServiceKey=${apikey}`;
     const response = await axios.get(url);
-    const holidays = response.data.response.body.items.item.map((item) => item.locdate);
-    console.log(holidays)
+    const holidays = response.data.response.body.items.item.map((item:any) => item.locdate);
+    console.log(holidays);
     return holidays;
   } catch (err) {
     // 에러 발생
     console.log(err);
+    return [];
   }
 };
 
 
-//최근 52주 내 평일 
-const getWeekdaysLast260Days = () => {
+//최근 00일 날짜 받아오기(월~금까지)
+const getWeekdaysSomeDays = () => {
   const today = new Date();
-  const last260DaysWeekdays = [];
+  const lastSomeDaysWeekdays = [];
   let weekdaysCounter = 0;
 
   for (let i = 0; weekdaysCounter < 50; i++) {
@@ -34,24 +34,25 @@ const getWeekdaysLast260Days = () => {
         ("0" + (day.getMonth() + 1)).slice(-2),
         ("0" + day.getDate()).slice(-2),
       ].join("");
-      last260DaysWeekdays.push(formattedDate);
+      lastSomeDaysWeekdays.push(formattedDate);
       weekdaysCounter++;
     }
   }
 
-  return last260DaysWeekdays;
+  return lastSomeDaysWeekdays;
 };
 
-
-export const getWeekdaysLast52WeeksWithoutHolidays = async (apikey) => {
+//받아온 날짜 범위에서 공휴일 제외하기
+export const getWeekdaysLast52WeeksWithoutHolidays = async (): Promise<Array<string> | undefined> => {
   try {
-    const weekdays = getWeekdaysLast260Days();
-    const currYear = new Date().getFullYear();
-    const lastYear = currYear - 1;
+    const weekdays = getWeekdaysSomeDays();
+    const yearNum = new Date().getFullYear();
+    const currYear = String(yearNum);
+    const lastYear = String(yearNum-1);
 
-    const publicHolidaysCurrYear = await getPublicHolidays(currYear, apikey);
-    const publicHolidaysLastYear = await getPublicHolidays(lastYear, apikey);
-    const publicHolidays = publicHolidaysCurrYear.concat(publicHolidaysLastYear);
+    const publicHolidaysCurrYear = await getPublicHolidays(currYear);
+    const publicHolidaysLastYear = await getPublicHolidays(lastYear);
+    const publicHolidays = publicHolidaysCurrYear?.concat(publicHolidaysLastYear);
 
     const weekdaysWithoutHolidays = weekdays.filter((date) => !publicHolidays.includes(date));
     return weekdaysWithoutHolidays;

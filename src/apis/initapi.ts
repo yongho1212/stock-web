@@ -1,23 +1,29 @@
-import axios from "axios";
-import JSZip from "jszip";
-import xml2js from "xml2js";
+import axios,{AxiosResponse} from "axios";
+import JSZip, {OutputType as JSZipOutputType} from "jszip";
+import xml2js, {Parser, Builder, parseString} from "xml2js";
 
+interface Company {
+  corp_code: string,
+  corp_name: string,
+  stock_code: string,
+  modify_date: string
+}
 
 
 // indexedDB 초기설정
-const openDB = () => {
+const openDB = ():Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.open("myDatabase", 1);
     
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
+    request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+      const db = (event.target as IDBOpenDBRequest).result;
       const objectStore = db.createObjectStore("companies", {
         keyPath: "corp_code",
       });
     };
     
     request.onsuccess = (event) => {
-      const db = event.target.result;
+      const db = (event.target as IDBOpenDBRequest).result;
       resolve(db);
     };
 
@@ -36,13 +42,13 @@ export const dbChecker = async() => {
   const datas = objectStore.getAll()
   datas.onsuccess = e => {
     // console.log(e.target.result=== undefined ? false : true)
-    resolve(e.target.result === undefined ? false : true)
+    resolve(!(e.target as any).result === undefined)
   }
 })
 }
 
 //indexedDB에 데이터 저장
-const saveToIndexedDB = async (companiesList) => {
+const saveToIndexedDB =  async (companiesList: Array<Company>): Promise<void> => {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
@@ -53,11 +59,11 @@ const saveToIndexedDB = async (companiesList) => {
       objectStore.put(company);
     });
 
-    transaction.oncomplete = (event) => {
-      resolve(event);
+    transaction.oncomplete = (event: Event) => {
+      resolve();
     };
 
-    transaction.onerror = (event) => {
+    transaction.onerror = (event: any) => {
       reject(event);
     };
 
@@ -66,38 +72,51 @@ const saveToIndexedDB = async (companiesList) => {
 };
 
 // downloadzip 함수 (app.js에서 useEffect로 마운트 시점에 실해되어야함)
-export const downloadZip = async () => {
+export const downloadZip = async (): Promise<void> => {
   const apiKey = process.env.REACT_APP_DART_API_KEY;
   const url = `https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key=${apiKey}`;
 
   // arraybuffer는 이진 데이터 처리 데이터 형식
   // 응답 데이터를 ArrayBuffer 형태로 가져올 수 있음
   const response = await axios.get(url, { responseType: "arraybuffer" });
-  const zip = new JSZip();
-  const zipData = await zip.loadAsync(response.data);
-  const xmlData = await zipData.file("CORPCODE.xml").async("text");
+  const zip: JSZip = new JSZip();
+  
+  const zipData: JSZip | null = await zip.loadAsync(response.data);
+  
+  const xmlData: any = await zipData.file("CORPCODE.xml")?.async("text");
 
+  
   const parser = new xml2js.Parser();
 
-  const parseStringPromise = (xmlData) => {
-    return new Promise((resolve, reject) => {
-      parser.parseString(xmlData, (err, result) => {
+  const parseStringPromise = (xmlData: any): Promise<string> => {
+    
+    return new Promise<string>((resolve, reject) => {
+      parser.parseString(xmlData, (err: any, result: any) => {
         if (err) {
           reject(err);
         } else {
-          resolve(result);
+          const jsonString = JSON.stringify(result);
+          if (jsonString) {
+            resolve(jsonString);
+          } else {
+            reject(new Error('JSON string is not available'));
+          }
         }
       });
     });
   };
-  getXmlData(xmlData)
-  async function getXmlData(xmlData) {
+  
+  async function getXmlData(xmlData: any): Promise<void> {
     try {
-      const parsedXML = await parseStringPromise(xmlData);
-      const companiesList = parsedXML.result.list;
-      await saveToIndexedDB(companiesList);
+      const parsedXML: any = await parseStringPromise(xmlData);
+      const companiesList: Array<Company> = parsedXML?.result?.list;
+      if (companiesList){
+        await saveToIndexedDB(companiesList);
+      }
     } catch (e) {
       console.log(e);
     }
   }
+  
+  getXmlData(xmlData);
 };

@@ -1,19 +1,24 @@
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 
-export const getStockPrice = (stockCode) => {
-  return new Promise((resolve, reject) => {
-    const apiKey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
-    const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
-    axios.get(url, function(response){
-      if (response) {
-        resolve(response);
-      } else {
-        reject(new Error('Error fetching stock data.'));
+export const getStockPrice = async(stockCode : string): Promise<AxiosResponse | undefined> => {
+    try{
+      const apiKey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
+      const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
+      const res = await axios.get(url)
+      console.log(res)
+      if (res.status == 200){
+        return res
+      } else{
+        new Error('Error fetching stock data.')
       }
-    })
-})
+    } catch(e){
+      console.log(e)
+    }
+
+
+
 }
 
 // export const getStockPrice = async (stockCode) => {
