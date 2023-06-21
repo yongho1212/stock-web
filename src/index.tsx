@@ -17,15 +17,15 @@ import KakaoCallback from './components/auth/kakaoAuth/KakaoCallback';
 
 
 const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <App />,
-      errorElement: <ErrorPage />,
-    
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+
     children: [
       {
-        path:"/",
-        element:<Main/>
+        path: "/",
+        element: <Main />
       },
       {
         path: "/companydetail/:id",
@@ -39,10 +39,10 @@ const router = createBrowserRouter([
   }
 ])
 
-
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.Fragment>
     <Provider store={store} >

@@ -19,7 +19,7 @@ const SearchForm = () => {
 
   const toggleState = useSelector((state) => state.toggleState);
 
-console.log(toggleState.toggleState)
+
   const dispatch = useDispatch();
   
 
