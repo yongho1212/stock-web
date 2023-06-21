@@ -10,7 +10,8 @@ import {
 import { Provider } from 'react-redux';
 import store from './state/store';
 import CompanyDetail from './pages/CompanyDetail';
-import Main from './pages/Main'
+import Main from './pages/Main';
+import ErrorPage from './pages/Error';
 
 import KakaoCallback from './components/auth/kakaoAuth/KakaoCallback';
 
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
     {
       path: "/",
       element: <App />,
-      // errorElement: <ErrorPage />,
+      errorElement: <ErrorPage />,
     
     children: [
       {
