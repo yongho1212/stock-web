@@ -15,6 +15,9 @@ import ErrorPage from './pages/Error';
 
 import KakaoCallback from './components/auth/kakaoAuth/KakaoCallback';
 
+import ThemeProvider from "./theme/ThemeProvider";
+
+
 
 const router = createBrowserRouter([
   {
@@ -46,7 +49,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.Fragment>
     <Provider store={store} >
-      <RouterProvider router={router} />
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </Provider>
   </React.Fragment>
 );

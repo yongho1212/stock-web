@@ -39,7 +39,7 @@ export default Header
 const HeaderContainer = styled.div`
     width: 100%;
     z-index: 999;
-    background-color: red;
+    background-color: ${(props) => props.theme["--100-color"]};
     display: flex;
     justify-content: space-between;
     align-items: center;

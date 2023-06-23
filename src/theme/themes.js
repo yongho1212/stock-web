@@ -1,5 +1,3 @@
-import { createSlice } from "@reduxjs/toolkit";
-
 const lightTheme = {
   "--100-color": "#F0F4F8",
   "--200-color": "#D9E2EC",
@@ -24,22 +22,4 @@ const darkTheme = {
   "--100-color": "#102A43",
 };
 
-
-const themeSlice = createSlice({
-  name: "theme",
-  initialState: {
-    currentTheme: lightTheme,
-  },
-  reducers: {
-    toggleTheme: (state) => {
-      if (state.currentTheme === lightTheme) {
-        state.currentTheme = darkTheme;
-      } else {
-        state.currentTheme = lightTheme;
-      }
-    },
-  },
-});
-
-export const { toggleTheme } = themeSlice.actions;
-export default themeSlice.reducer;
+export {lightTheme, darkTheme};
