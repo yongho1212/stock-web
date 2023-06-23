@@ -10,9 +10,16 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+
+import { useContext } from "react";
+import { ThemeContext } from "../../theme/ThemeProvider";
+// styled component가 아닌 외부 라이브러리를 사용하기때문에 명시적으로 불러와야함
+
+
 const StockChart = ({ data }) => {
   const minPrice = Math.min(...data.map((item) => item.price));
   const reversedData = [...data].reverse();
+  const { theme } = useContext(ThemeContext); 
 
   const fillMissingDates = (data) => {
     const filledData = [];
@@ -48,7 +55,7 @@ const StockChart = ({ data }) => {
     }
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={400} >
       <LineChart
         width={500}
         height={300}
@@ -69,10 +76,11 @@ const StockChart = ({ data }) => {
         <Line
           type="monotone"
           dataKey="price"
-          stroke="#8884d8"
+          stroke={theme["--900-color"]}
+          strokeWidth={2}
           activeDot={{ r: 8 }}
         />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+        
       </LineChart>
     </ResponsiveContainer>
   );

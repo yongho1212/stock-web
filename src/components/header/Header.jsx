@@ -1,10 +1,10 @@
 import React from 'react'
 
-
 import MainLogo from '../common/MainLogo'
 import SearchForm from '../SearchForm'
 import KakaoLogin from '../auth/kakaoAuth/KakaoLogin'
 import KakaoLogout from '../auth/kakaoAuth/KakaoLogout'
+import ThemeChangeBtn from '../common/ThemeChangeBtn'
 
 import { styled } from 'styled-components'
 
@@ -28,7 +28,7 @@ const Header = () => {
         :
         <KakaoLogin />
         }
-        
+        <ThemeChangeBtn />
         
     </HeaderContainer>
   )
@@ -42,7 +42,6 @@ const HeaderContainer = styled.div`
     background-color: ${(props) => props.theme["--100-color"]};
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    
+    align-items: center;   
 `
 

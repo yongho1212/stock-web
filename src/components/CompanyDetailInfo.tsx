@@ -148,6 +148,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
                   : `https://${renderData?.hm_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{}}
               >
                 {renderData?.hm_url}
               </a>
@@ -199,10 +200,11 @@ export default CompanyDetailInfo;
 const Container = styled.div`
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 5px;
+  
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: auto;
   margin-bottom: 20px;
+  background-color: ${(props) => props.theme["--100-color"]};
 `;
 
 const FirstRowCtnr = styled.div`
@@ -217,7 +219,8 @@ const FirstRowLeft = styled.div`
   flex: 1;
   margin-right: 20px;
 
-  background-color: white;
+  background-color: ${(props) => props.theme["--300-color"]};
+  color: ${(props) => props.theme["--800-color"]};
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -226,11 +229,12 @@ const FirstRowLeft = styled.div`
 const FirtstRowRight = styled.div`
   flex: 1;
   margin-left: 20px;
-
-  background-color: white;
+  color: ${(props) => props.theme["--800-color"]};
+  background-color: ${(props) => props.theme["--300-color"]};
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
 `;
 
 const Item = styled.div`
@@ -247,7 +251,8 @@ const PriceContainer = styled.div`
 `;
 
 const PriceCard = styled.div`
-  background-color: white;
+  background-color: ${(props) => props.theme["--300-color"]};
+  color: ${(props) => props.theme["--800-color"]};
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -258,12 +263,11 @@ const PriceCard = styled.div`
 const PriceLabel = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: #777;
   margin-bottom: 5px;
 `;
 
 const StockPrice = styled.div`
   font-size: 24px;
   font-weight: bold;
-  color: #ff5500;
+  color: ${(props) => props.theme["--900-color"]};
 `;

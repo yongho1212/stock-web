@@ -170,7 +170,7 @@ const SearchFormContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: aqua;
+  background-color:${(props) => props.theme["--100-color"]};
   width: 55%;
   height: 60px;
 `;
@@ -178,7 +178,7 @@ const SearchFormContainer = styled.div`
 const StockNameInput = styled.input`
   width: 90%;
   height: 40px;
-  border: 3px solid #33ff33;
+  color: ${(props) => props.theme["--900-color"]};
   border-radius: 9px;
 `;
 
@@ -187,7 +187,7 @@ const StockSearchBtn = styled.button`
   height: 40px;
   background: none;
   border: none;
-  color: #33ff33;
+  color: ${(props) => props.theme["--900-color"]};
   cursor: pointer;
 `;
 

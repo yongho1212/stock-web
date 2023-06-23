@@ -1,7 +1,7 @@
-// ThemeProvider.js
 import React, { createContext, useState } from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
+import GlobalStyle from "./GlobalStyle";
 
 export const ThemeContext = createContext();
 
@@ -16,7 +16,17 @@ const ThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
-        <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>
+      <StyledThemeProvider theme={currentTheme}>
+      <GlobalStyle />
+        <div
+          style={{
+            ...currentTheme,
+            transition: "all 0.9    s ease",
+          }}
+        >
+          {children}
+        </div>
+      </StyledThemeProvider>
     </ThemeContext.Provider>
   );
 };
