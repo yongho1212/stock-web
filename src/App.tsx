@@ -18,10 +18,10 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
+  // const apikey = process.env.REACT_APP_PUBLIC_DATA_API_KEY
 
-  console.log(sessionStorage.getItem('access_token'))
-  console.log(sessionStorage.getItem('userdata'))
+  // console.log(sessionStorage.getItem('access_token'))
+  // console.log(sessionStorage.getItem('userdata'))
 
   useEffect(() => {
     const fetchDate = async () => {
@@ -37,8 +37,11 @@ const App = () => {
   // 마운트시 indexedDB에 데이터가 있는지 확인하고 없는 경우에만 downloadzip을 실행함
   useEffect(() => {
     async function fetchData() {
+      console.log("fetch data init")
       const result = await dbChecker();
+      
       if (!result) {
+        console.log("zip down load init")
         await downloadZip();
       }
     }

@@ -77,11 +77,12 @@ export const downloadZip = async (): Promise<void> => {
   
     try {
       const response = await axiosInstance.get('/api/download-zip');
-      const companiesList = response.data.result.list;
-      console.log(response)
+      const companiesList = response?.data
       
       if (companiesList) {
+        console.log("idx")
         await saveToIndexedDB(companiesList);
+
       }
     } catch (e) {
       console.log(e);
