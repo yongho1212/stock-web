@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from './axiosInstance'
 
 interface ResDataType {
   basDt: string;
@@ -23,8 +24,8 @@ export const getStockPrice = async (stockCode: string,specificDate: string): Pro
   try {
     console.log(stockCode, specificDate);
     const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
-    const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${specificDate}&likeSrtnCd=${stockCode}`;
-    const res = await axios.get(url);
+    // const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${specificDate}&likeSrtnCd=${stockCode}`;
+    const res = await axiosInstance.get(`/api/go-data/${stockCode}/${specificDate}`);
     console.log(res.data);
     const resData = res?.data?.response?.body?.items?.item[0];
     console.log(resData);

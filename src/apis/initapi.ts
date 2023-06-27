@@ -1,6 +1,7 @@
 import axios,{AxiosResponse} from "axios";
 import JSZip, {OutputType as JSZipOutputType} from "jszip";
 import xml2js, {Parser, Builder, parseString} from "xml2js";
+import axiosInstance from './axiosInstance'
 
 interface Company {
   corp_code: string,
@@ -73,50 +74,17 @@ const saveToIndexedDB =  async (companiesList: Array<Company>): Promise<void> =>
 
 // downloadzip 함수 (app.js에서 useEffect로 마운트 시점에 실해되어야함)
 export const downloadZip = async (): Promise<void> => {
-  const apiKey = process.env.REACT_APP_DART_API_KEY;
-  const url = `https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key=${apiKey}`;
-
-  // arraybuffer는 이진 데이터 처리 데이터 형식
-  // 응답 데이터를 ArrayBuffer 형태로 가져올 수 있음
-  const response = await axios.get(url, { responseType: "arraybuffer" });
-  const zip: JSZip = new JSZip();
   
-  const zipData: JSZip | null = await zip.loadAsync(response.data);
-  
-  const xmlData: any = await zipData.file("CORPCODE.xml")?.async("text");
-
-  
-  const parser = new xml2js.Parser();
-
-  const parseStringPromise = (xmlData: any): Promise<string> => {
-    
-    return new Promise<string>((resolve, reject) => {
-      parser.parseString(xmlData, (err: any, result: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          const jsonString = JSON.stringify(result);
-          if (jsonString) {
-            resolve(jsonString);
-          } else {
-            reject(new Error('JSON string is not available'));
-          }
-        }
-      });
-    });
-  };
-  
-  async function getXmlData(xmlData: any): Promise<void> {
     try {
-      const parsedXML: any = await parseStringPromise(xmlData);
-      const companiesList: Array<Company> = parsedXML?.result?.list;
-      if (companiesList){
+      const response = await axiosInstance.get('/api/download-zip');
+      const companiesList = response.data.result.list;
+      console.log(response)
+      
+      if (companiesList) {
         await saveToIndexedDB(companiesList);
       }
     } catch (e) {
       console.log(e);
     }
-  }
   
-  getXmlData(xmlData);
 };

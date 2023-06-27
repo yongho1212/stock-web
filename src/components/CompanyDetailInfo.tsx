@@ -12,6 +12,8 @@ import StockChart from "./chart/StockChart";
 
 import { useSelector } from "react-redux";
 
+import axiosInstance  from '../apis/axiosInstance';
+
 interface Props {
   corpCode: string | undefined;
 }
@@ -45,7 +47,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
   const currDate = datesdata[2];
 
-  const publicdatakey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
+  console.log(ad)
 
   // renderDeatilData안찍힘
   console.log(renderDeatilData);
@@ -54,9 +56,10 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   async function getPriceByEachDay(stkCode: string, currDate: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await axios.get(
-          `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`
-        );
+        // const res = await axios.get(
+        //   `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`
+        // );
+        const res = await axiosInstance.get(`/api/go-data/${stkCode}/${currDate}`);
         const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
         const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
         // console.log(res?.data?.response?.body?.items?.item[0].basDt)
@@ -69,6 +72,33 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
       }
     });
   }
+
+  // const getPricesByMultipleDays = async (stkCode: string, dates: string[]) => {
+  //   try {
+  //     const dateString = dates.join(',');
+  //     const res = await axiosInstance.get(`/api/go-data-all/${stkCode}?dates=${dateString}`);
+  //     const results = res.data.map((response: any) => {
+  //       const eachPrice = response?.response?.body?.items?.item[0]?.mkp;
+  //       const eachDate = response?.response?.body?.items?.item[0]?.basDt;
+  //       return { date: eachDate, price: eachPrice };
+  //     });
+  //     return results;
+      
+  //   } catch (e) {
+  //     console.log(e);
+  //     return [];
+  //   }
+  // }
+  
+  // const allSettledPromises = async (stkCode: string) => {
+  //   try {
+  //     const results = await getPricesByMultipleDays(stkCode, datesdata);
+  //     console.log(results)
+  //     setad(results);
+  //   } catch (e) {
+  //     console.error(`error on ${e}`);
+  //   }
+  // };
 
   const allSettledPromises = async (stkCode: string) => {
     const promises = datesdata?.map((x: string) => getPriceByEachDay(stkCode, x));
@@ -88,12 +118,6 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
 
 
-  // 마운트 될 때
-  // !! TODO 언마운트 시점에 clear함수 적용하기
-  // useEffect(() => {
-  //   callCombinedAPI(corpCode);
-  //   return () => callCombinedAPI(corpCode);
-  // }, []);
 
   // TS useEffect 내부에서 정의된 비동기 함수를 직접 호출할 수 없습니다.
   useEffect(() => {
