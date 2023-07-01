@@ -30,9 +30,11 @@ const App = () => {
       dispatch(setDays(dates));
     }
     fetchDate();
+    
   }, [])
 
   // !!TODO checker가 PENDING 상태일 때 INDICATOR RENDER
+  // !!TODO indexed db에 넣는동안 진행상황 보여주시 (PROGRESS BAR)
 
   // 마운트시 indexedDB에 데이터가 있는지 확인하고 없는 경우에만 downloadzip을 실행함
   useEffect(() => {

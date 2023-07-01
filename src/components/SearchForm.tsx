@@ -10,74 +10,87 @@ import {fetchIndexedDB} from "../apis/fetchIndexedDB";
 
 import { IoSearchCircleOutline } from "react-icons/io5";
 
+interface SearchResultItem {
+  corp_name: string[];
+  stock_code: string;
+}
 
 const SearchForm = () => {  
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  const toggleState = useSelector((state) => state.toggleState);
-
-
+  const toggleState = useSelector((state: any) => state.toggleState);
   const dispatch = useDispatch();
-  
-
-  const ref = useRef();
-  const searchResultArea = useRef(null);
-
-  // 디바운스 시점에 통신 시작
-  // handle change시점으로 하면 안될거같음
-
-  // 추천 종목을 눌렀을 때나
-  // 
-
   const debouncedKeyword = useDebounce(searchTerm, 500);
-    useEffect(() => {
-      getSearchResult(debouncedKeyword);
-      console.log("searchResult: ", debouncedKeyword);
-    },[debouncedKeyword])
 
+  const refSearch = React.useRef<HTMLDivElement>(null);
+  const searchFormRef = refSearch as React.RefObject<HTMLDivElement>;
+
+  // 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        // setOpenDrawer(false);
+    getSearchResult(debouncedKeyword);
+    console.log("searchResult: ", debouncedKeyword);
+  },[debouncedKeyword])
+
+
+  // 검색 결과 DOM 외부 클릭시 발생하는 이벤트 핸들러
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      // refSearch.current => exist inside DOM element!!! 
+      // refSearch.current가  truthy하고 
+      // event click한 곳이 refSearch.current 영역이 아닌경우
+      if (refSearch.current && !refSearch.current.contains(event.target)) {
         dispatch(setToggleState(false));
       }
     };
-
-    // 클릭 이벤트가 발생했을 때 handleClickOutside 함수를 실행합니다.
+    // 클릭 이벤트가 발생했을 때 handleClickOutside 함수 실행
     document.addEventListener('click', handleClickOutside);
-
-    // 컴포넌트가 사라질 때 이벤트 리스너를 제거합니다.
+    // Search Result COMPONENT가 unmount 되는 시점에 Clear함수를 실행시킴
     return () => {
+      console.log("clear function activated")
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [ref]);
+  }, [refSearch]);
   
 
-  const filterCompanyName = (keyword, data) => {
-    const results = [];
-    const relatedKeywords = new Set();
+  // 디바운스 시점에 통신 시작
 
-    data.forEach((item) => {
+  // 추천 종목을 눌렀을 때나
+  // 넘겨줄 키워드, 시간 값 넘기기
+  
+
+    
+
+
+  
+  
+
+  const filterCompanyName = (keyword: string, data: SearchResultItem[]): { results: SearchResultItem[]; relatedKeywords: string[] } => {
+    const results: SearchResultItem[] = [];
+    const relatedKeywords = new Set<string>();
+
+    data.forEach((item: SearchResultItem) => {
       const companyName = item.corp_name[0];
-
+ 
       if (companyName.includes(keyword)) {
         results.push(item);
         relatedKeywords.add(companyName);
       } else {
-        // 키워드를 포함하거나 시작하는 회사 이름을 연관 키워드로 처리합니다.
+        // 키워드를 포함하거나 시작하는 회사 이름을 연관 키워드로 처리.
         if (companyName?.includes(keyword) || companyName.startsWith(keyword)) {
           relatedKeywords.add(companyName);
         }
       }
     });
-    return { results, relatedKeywords: Array.from(relatedKeywords) };
+
+    return { results, relatedKeywords: Array.from(relatedKeywords)};
   };
 
-  const getSearchResult = async(debouncedKeyword) => {
-    if (debouncedKeyword?.length == 0){
+
+  const getSearchResult = async(debouncedKeyword: string) => {
+    if (debouncedKeyword?.length === 0){
       setSearchResults([]);
     }
     // 얼리 리턴으로 바꾸는 편이 나음
@@ -96,12 +109,12 @@ const SearchForm = () => {
     };
   }
 
-  const handleInputChange = async (event) => {
+  const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setSearchTerm(event.target.value);
-    }
+  }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event :React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const indexedDBData = await fetchIndexedDB();
@@ -116,18 +129,15 @@ const SearchForm = () => {
     }
   };
 
-  // !!TODO 검색 결과 단기 저장을 통해 이전화면으로 넘어갔을 때 그대로 남아있게 하기
-  // 입력 => 디바운스 => 결과렌더링
-
-
-
-
   
+
+
+
 
   return (
     
       <SearchFormContainer
-        ref={ref}
+        ref={searchFormRef}
         // onClick={handleOutsideClick}
         // onClick={(e)=>e.stopPropagation()}
       >
@@ -146,7 +156,7 @@ const SearchForm = () => {
           </StockSearchBtn>
         </form>
 
-        {/* 맨처음에 누르는 회사의 기업코드가 남아있는것 같음 */}
+        
         {toggleState.toggleState &&
           <SearchResultsContainer>
             <SearchResultsList>

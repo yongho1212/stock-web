@@ -66,4 +66,4 @@ export const getWeekdaysLast52WeeksWithoutHolidays = async (): Promise<Array<str
 
 
 
-// getWeekdaysLast52WeeksWithoutHolidays(apikey).then((result) => console.log(result));
+
