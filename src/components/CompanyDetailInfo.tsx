@@ -40,25 +40,33 @@ interface CommonApiData {
 const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
   const [renderDeatilData, setRenderDetialData] = useState<CommonApiData | null>(null);
-  const [dateData, setDateData] = useState<string[]>([]);
+  const [datesdata, setDatesdata] = useState<string[]>([]);
+  const [currDate, setCurrDate] = useState<string>("");
   const [ad, setad] = useState<any[]>([]);
 
-  const datesdata = useSelector((state: any) => state.dates.dates);
+  // const datesdata = useSelector((state: any) => state.dates.dates);
+  console.log(currDate)
+  useEffect(() => {
+    
+    const datesdataFromLocalStorage = localStorage.getItem("dates");
 
-  const currDate = datesdata[2];
+    if (datesdataFromLocalStorage) {
+      const parsedDates = JSON.parse(datesdataFromLocalStorage);
+      setDatesdata(parsedDates);
+      setCurrDate(parsedDates[2]);
 
-  console.log(ad)
+    } else {
+      setCurrDate("20230625");
+    }
+  },[])
+ 
 
-  // renderDeatilData안찍힘
-  console.log(renderDeatilData);
 
-  // 이부분 수정해야함
+  
   async function getPriceByEachDay(stkCode: string, currDate: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        // const res = await axios.get(
-        //   `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`
-        // );
+       
         const res = await axiosInstance.get(`/api/go-data/${stkCode}/${currDate}`);
         const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
         const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
@@ -73,32 +81,6 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
     });
   }
 
-  // const getPricesByMultipleDays = async (stkCode: string, dates: string[]) => {
-  //   try {
-  //     const dateString = dates.join(',');
-  //     const res = await axiosInstance.get(`/api/go-data-all/${stkCode}?dates=${dateString}`);
-  //     const results = res.data.map((response: any) => {
-  //       const eachPrice = response?.response?.body?.items?.item[0]?.mkp;
-  //       const eachDate = response?.response?.body?.items?.item[0]?.basDt;
-  //       return { date: eachDate, price: eachPrice };
-  //     });
-  //     return results;
-      
-  //   } catch (e) {
-  //     console.log(e);
-  //     return [];
-  //   }
-  // }
-  
-  // const allSettledPromises = async (stkCode: string) => {
-  //   try {
-  //     const results = await getPricesByMultipleDays(stkCode, datesdata);
-  //     console.log(results)
-  //     setad(results);
-  //   } catch (e) {
-  //     console.error(`error on ${e}`);
-  //   }
-  // };
 
   const allSettledPromises = async (stkCode: string) => {
     const promises = datesdata?.map((x: string) => getPriceByEachDay(stkCode, x));
@@ -117,17 +99,15 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   };
 
 
-
-
-  // TS useEffect 내부에서 정의된 비동기 함수를 직접 호출할 수 없습니다.
+  // TS useEffect에서 orpCode, currDate 감지하여 참일경우 api call
   useEffect(() => {
     (async () => {
-      if (corpCode) {
+      if (corpCode && currDate) {
         await callCombinedAPI(corpCode);
       }
     })();
 
-  }, [corpCode]);
+  }, [corpCode, currDate]);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
   const callCombinedAPI = async (corpCode: string): Promise<void> => {

@@ -11,7 +11,6 @@ const getPublicHolidays = async (year: string) : Promise<Array<string>> => {
     const response = await axiosInstance.get(`/api/holidays/${year}`)
     
     const holidays = response.data.response.body.items.item.map((item:any) => item.locdate);
-    console.log(holidays);
     return holidays;
   } catch (err) {
     // 에러 발생
