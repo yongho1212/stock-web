@@ -23,11 +23,19 @@ const App = () => {
   // console.log(sessionStorage.getItem('access_token'))
   // console.log(sessionStorage.getItem('userdata'))
 
+  
+
+
   useEffect(() => {
     const fetchDate = async () => {
       const dates = await getWeekdaysLast52WeeksWithoutHolidays();
       console.log(dates)
-      dispatch(setDays(dates));
+      // dispatch(setDays(dates));
+      if (dates){
+        localStorage.setItem("dates", JSON.stringify(dates));
+        
+      }
+      
     }
     fetchDate();
     
