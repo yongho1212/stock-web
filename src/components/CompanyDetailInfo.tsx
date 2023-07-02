@@ -41,7 +41,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
   const [renderDeatilData, setRenderDetialData] = useState<CommonApiData | null>(null);
   const [dateData, setDateData] = useState<string[]>([]);
-  const [ad, setad] = useState<any[]>([]);
+  const [ad, setSettledData] = useState<any[]>([]);
 
   const datesdata = useSelector((state: any) => state.dates.dates);
 
@@ -73,32 +73,6 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
     });
   }
 
-  // const getPricesByMultipleDays = async (stkCode: string, dates: string[]) => {
-  //   try {
-  //     const dateString = dates.join(',');
-  //     const res = await axiosInstance.get(`/api/go-data-all/${stkCode}?dates=${dateString}`);
-  //     const results = res.data.map((response: any) => {
-  //       const eachPrice = response?.response?.body?.items?.item[0]?.mkp;
-  //       const eachDate = response?.response?.body?.items?.item[0]?.basDt;
-  //       return { date: eachDate, price: eachPrice };
-  //     });
-  //     return results;
-      
-  //   } catch (e) {
-  //     console.log(e);
-  //     return [];
-  //   }
-  // }
-  
-  // const allSettledPromises = async (stkCode: string) => {
-  //   try {
-  //     const results = await getPricesByMultipleDays(stkCode, datesdata);
-  //     console.log(results)
-  //     setad(results);
-  //   } catch (e) {
-  //     console.error(`error on ${e}`);
-  //   }
-  // };
 
   const allSettledPromises = async (stkCode: string) => {
     const promises = datesdata?.map((x: string) => getPriceByEachDay(stkCode, x));
@@ -113,7 +87,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
     } catch (e) {
       console.error(`error on ${e}`);
     }
-    setad(result);
+    setSettledData(result);
   };
 
 
