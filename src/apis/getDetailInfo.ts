@@ -4,12 +4,25 @@ import axiosInstance from './axiosInstance';
 
 import { useSelector } from "react-redux";
 
-const datesdata = useSelector((state: any) => state.dates.dates);
+// const datesdata = useSelector((state: any) => state.dates.dates);
+// const datesdata = localStorage.getItem('dates')
 
-const currDate = datesdata[2]
+// let currDate: string;
 
-export const getStockPrice = async(stockCode : string, currDate: string): Promise<AxiosResponse | undefined> => {
+//   if (datesdata) { 
+//     const parsedDates = JSON.parse(datesdata); 
+//     const currDate = parsedDates[2];
+//   } else {
+//     const currDate = "20230625";
+//   }
+
+  
+
+  
+
+export const getStockPrice = async(stockCode : string, currDate:string): Promise<AxiosResponse | undefined> => {
     try{
+      console.log(currDate)
       const apiKey = process.env.REACT_APP_PUBLIC_DATA_API_KEY;
       // const url = `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${apiKey}&numOfRows=1&pageNo=1&resultType=json&basDt=20230524&likeSrtnCd=${stockCode}`;
       const res = await axiosInstance.get(`/api/go-data/${stockCode}/${currDate}`);

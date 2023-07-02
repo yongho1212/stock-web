@@ -28,10 +28,15 @@ const App = () => {
   // console.log(sessionStorage.getItem('access_token'))
   // console.log(sessionStorage.getItem('userdata'))
 
+  
+
+
   useEffect(() => {
     const fetchDate = async () => {
       const dates = await getWeekdaysLast52WeeksWithoutHolidays();
+
       dispatch(setDays(dates));
+
     }
     fetchDate();
   }, [])

@@ -40,25 +40,34 @@ interface CommonApiData {
 const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
   const [renderDeatilData, setRenderDetialData] = useState<CommonApiData | null>(null);
+
   const [dateData, setDateData] = useState<string[]>([]);
   const [ad, setSettledData] = useState<any[]>([]);
 
-  const datesdata = useSelector((state: any) => state.dates.dates);
 
-  const currDate = datesdata[2];
+  // const datesdata = useSelector((state: any) => state.dates.dates);
+  console.log(currDate)
+  useEffect(() => {
+    
+    const datesdataFromLocalStorage = localStorage.getItem("dates");
 
-  console.log(ad)
+    if (datesdataFromLocalStorage) {
+      const parsedDates = JSON.parse(datesdataFromLocalStorage);
+      setDatesdata(parsedDates);
+      setCurrDate(parsedDates[2]);
 
-  // renderDeatilData안찍힘
-  console.log(renderDeatilData);
+    } else {
+      setCurrDate("20230625");
+    }
+  },[])
+ 
 
-  // 이부분 수정해야함
+
+  
   async function getPriceByEachDay(stkCode: string, currDate: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        // const res = await axios.get(
-        //   `https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=${publicdatakey}&numOfRows=1&pageNo=1&resultType=json&basDt=${currDate}&likeSrtnCd=${stkCode}`
-        // );
+       
         const res = await axiosInstance.get(`/api/go-data/${stkCode}/${currDate}`);
         const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
         const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
@@ -91,17 +100,15 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   };
 
 
-
-
-  // TS useEffect 내부에서 정의된 비동기 함수를 직접 호출할 수 없습니다.
+  // TS useEffect에서 orpCode, currDate 감지하여 참일경우 api call
   useEffect(() => {
     (async () => {
-      if (corpCode) {
+      if (corpCode && currDate) {
         await callCombinedAPI(corpCode);
       }
     })();
 
-  }, [corpCode]);
+  }, [corpCode, currDate]);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
   const callCombinedAPI = async (corpCode: string): Promise<void> => {
