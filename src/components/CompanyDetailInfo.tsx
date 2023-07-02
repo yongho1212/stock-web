@@ -40,9 +40,10 @@ interface CommonApiData {
 const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
   const [renderDeatilData, setRenderDetialData] = useState<CommonApiData | null>(null);
-  const [datesdata, setDatesdata] = useState<string[]>([]);
-  const [currDate, setCurrDate] = useState<string>("");
-  const [ad, setad] = useState<any[]>([]);
+
+  const [dateData, setDateData] = useState<string[]>([]);
+  const [ad, setSettledData] = useState<any[]>([]);
+
 
   // const datesdata = useSelector((state: any) => state.dates.dates);
   console.log(currDate)
@@ -95,7 +96,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
     } catch (e) {
       console.error(`error on ${e}`);
     }
-    setad(result);
+    setSettledData(result);
   };
 
 

@@ -42,9 +42,19 @@ export const dbChecker = async() => {
   const objectStore = transaction.objectStore('companies');
   const datas = objectStore.getAll()
   datas.onsuccess = e => {
-    // console.log(e.target.result=== undefined ? false : true)
-    resolve(!(e.target as any).result === undefined)
-  }
+    const result = (e.target as any).result;
+    
+    // data 유무 확인
+    if (Array.isArray(result) && result.length === 0) {
+      resolve(false);
+    } else {
+      resolve(true);
+    }
+  };
+  // err 
+  datas.onerror = e => {
+    reject(e);
+  };  
 })
 }
 
@@ -73,19 +83,25 @@ const saveToIndexedDB =  async (companiesList: Array<Company>): Promise<void> =>
 };
 
 // downloadzip 함수 (app.js에서 useEffect로 마운트 시점에 실해되어야함)
-export const downloadZip = async (): Promise<void> => {
+export const downloadZip = async (
+  onProgressUpdate: (percentage: number) => void,
+ ): Promise<void> => {
   
     try {
-      const response = await axiosInstance.get('/api/download-zip');
+      const response = await axiosInstance.get('/api/download-zip',{
+        onDownloadProgress: e => {
+          if (e.total){
+            const percentage = Math.round((e.loaded * 100) / e.total);
+            onProgressUpdate(percentage);
+          }
+        }
+      });
       const companiesList = response?.data
-      
       if (companiesList) {
         console.log("idx")
         await saveToIndexedDB(companiesList);
-
       }
     } catch (e) {
       console.log(e);
     }
-  
 };
