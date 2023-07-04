@@ -32,6 +32,8 @@
 
 5. DarkMode
 
+6. Promise를 통한 서버 통신 response값을 받아오는데 시간이 너무 오래걸림
+
 ## 진행중 / 추가예정
 
 1. Testing (jest)
