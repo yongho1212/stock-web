@@ -46,34 +46,42 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
 
   // const datesdata = useSelector((state: any) => state.dates.dates);
-  console.log(currDate)
   useEffect(() => {
-    
     const datesdataFromLocalStorage = localStorage.getItem("dates");
-
     if (datesdataFromLocalStorage) {
       const parsedDates = JSON.parse(datesdataFromLocalStorage);
       setDateData(parsedDates);
       setCurrDate(parsedDates[2]);
-
     } else {
       setCurrDate("20230625");
     }
   },[])
+
+    // TS useEffect에서 corpCode, currDate 감지하여 참일경우 api call
+    useEffect(() => {
+      (async () => {
+        if (corpCode && currDate) {
+          await callCombinedAPI(corpCode, currDate);
+        }
+      })();
+    }, [corpCode, currDate]);
  
 
 
   
-  async function getPriceByEachDay(stkCode: string, currDate: string) {
+  async function getPriceByEachDay(stkCode: string, startDate: string) {
     return new Promise(async (resolve, reject) => {
       try {
-       
-        const res = await axiosInstance.get(`/api/go-data/${stkCode}/${currDate}`);
-        const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
-        const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
+       console.log('1')
+        const res = await axiosInstance.get(`/api/go-data-term/${startDate}/${stkCode}`);
+        console.log(res)
+        // const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
+        // const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
         // console.log(res?.data?.response?.body?.items?.item[0].basDt)
         if (res) {
-          return resolve({ date: eachDate, price: eachPrice });
+          return resolve( res);
+        }  else {
+          return resolve(null); //  응답이 없는 경우.
         }
       } catch (e) {
         console.log(e);
@@ -84,31 +92,41 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
 
   const allSettledPromises = async (stkCode: string) => {
-    const promises = dateData?.map((x: string) => getPriceByEachDay(stkCode, x));
-    const result = [];
-    try {
-      const promiseResult = await Promise.allSettled(promises);
-      for (const i of promiseResult) {
-        if (i.status === "fulfilled") {
-          result.push(i.value); // Add the resolved value if the promise is fulfilled
-        }
+    const startDate:string|undefined = dateData.at(-1)
+    console.log(startDate)
+    const result : any = []
+    
+    if(startDate){
+      const data:any = await getPriceByEachDay(stkCode, startDate)
+      const dataArr = data?.data?.response?.body?.items?.item
+      console.log(dataArr)
+      for (const i of dataArr){
+        const eachDate = i.basDt;
+        const eachPrice = i.mkp;
+        
+        console.log(i)  
+        result.push({ date: eachDate, price: eachPrice })
+        
       }
-    } catch (e) {
-      console.error(`error on ${e}`);
+      setSettledData(result)
     }
+    // const promises = dateData?.map((x: string) => getPriceByEachDay(stkCode, x));
+    // const result = [];
+    // try {
+    //   const promiseResult = await Promise.allSettled(promises);
+    //   for (const i of promiseResult) {
+    //     if (i.status === "fulfilled") {
+    //       result.push(i.value); // Add the resolved value if the promise is fulfilled
+    //     }
+    //   }
+    // } catch (e) {
+    //   console.error(`error on ${e}`);
+    // }
     setSettledData(result);
   };
 
 
-  // TS useEffect에서 orpCode, currDate 감지하여 참일경우 api call
-  useEffect(() => {
-    (async () => {
-      if (corpCode && currDate) {
-        await callCombinedAPI(corpCode, currDate);
-      }
-    })();
 
-  }, [corpCode, currDate]);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
   const callCombinedAPI = async (corpCode: string, currDate:string): Promise<void> => {
