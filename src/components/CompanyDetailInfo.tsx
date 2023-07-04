@@ -40,7 +40,7 @@ interface CommonApiData {
 const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
   const [renderDeatilData, setRenderDetialData] = useState<CommonApiData | null>(null);
-
+  const [currDate, setCurrDate] = useState<string | undefined>();
   const [dateData, setDateData] = useState<string[]>([]);
   const [ad, setSettledData] = useState<any[]>([]);
 
@@ -53,7 +53,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
     if (datesdataFromLocalStorage) {
       const parsedDates = JSON.parse(datesdataFromLocalStorage);
-      setDatesdata(parsedDates);
+      setDateData(parsedDates);
       setCurrDate(parsedDates[2]);
 
     } else {
@@ -84,7 +84,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
 
   const allSettledPromises = async (stkCode: string) => {
-    const promises = datesdata?.map((x: string) => getPriceByEachDay(stkCode, x));
+    const promises = dateData?.map((x: string) => getPriceByEachDay(stkCode, x));
     const result = [];
     try {
       const promiseResult = await Promise.allSettled(promises);
@@ -104,14 +104,14 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   useEffect(() => {
     (async () => {
       if (corpCode && currDate) {
-        await callCombinedAPI(corpCode);
+        await callCombinedAPI(corpCode, currDate);
       }
     })();
 
   }, [corpCode, currDate]);
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
-  const callCombinedAPI = async (corpCode: string): Promise<void> => {
+  const callCombinedAPI = async (corpCode: string, currDate:string): Promise<void> => {
     try {
       // 변수에 할당해서 return값을 다음 함수에 전달
       const dartData = await getStockDataFromDart(corpCode);

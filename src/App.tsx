@@ -34,11 +34,16 @@ const App = () => {
   useEffect(() => {
     const fetchDate = async () => {
       const dates = await getWeekdaysLast52WeeksWithoutHolidays();
-
-      dispatch(setDays(dates));
-
+      console.log(dates)
+      // dispatch(setDays(dates));
+      if (dates){
+        localStorage.setItem("dates", JSON.stringify(dates));
+        
+      }
+      
     }
     fetchDate();
+    
   }, [])
 
   // !!TODO checker가 PENDING 상태일 때 INDICATOR RENDER
