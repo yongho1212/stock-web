@@ -65,7 +65,7 @@ const App = () => {
   }, [])
 
   return (
-    <div key={id}>
+    <Rootwrepper key={id}>
       <Header />
       <Outlet />
 
@@ -81,11 +81,15 @@ const App = () => {
 
       }
       
-    </div>
+    </Rootwrepper>
   );
 }
 
 export default App;
+
+const Rootwrepper = styled.div`
+  background-color: ${(props) => props.theme["--100-color"]};
+`
 
 const DownloadIndicator = styled.div`
   width: 500px;

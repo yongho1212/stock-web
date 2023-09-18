@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import styled from "styled-components";
-import { Link } from 'react-router-dom'
-
-//apis
 import { getStockDataFromDart } from "../apis/getStockDataFromDart";
 import { getStockPrice } from "../apis/getStockPrice";
-//cmpts
+
 import Indicator from "./common/Indicator";
 import StockChart from "./chart/StockChart";
-
-import { useSelector } from "react-redux";
+import Spacer from '../components/common/Spacer';
+import DetailHeader from '../components/companydetails/DetailHeader';
 
 import axiosInstance  from '../apis/axiosInstance';
 
@@ -20,7 +16,6 @@ interface Props {
 
 interface DartData {
   stock_code: string;
-  //? 는 해당 속성이 있을 수도 없을 수도 있음을 뜻한다. OPTIONAL
   stock_name?: string;
   corp_name?: string;
   corp_name_eng?: string;
@@ -29,13 +24,33 @@ interface DartData {
   hm_url?: string;
 }
 
-interface CommonApiData {
-  mkp?: string;
-  vs?: string;
-  hipr?: string;
-  lopr?: string;
-  mrktTotAmt?: string;
-}
+// interface CommonApiData {
+//   vs?: string; // 전일 등락 대비
+//   fltRt?: string; //전일 대비 등락비
+//   mkp?: string; //시가
+//   clpr?: string; //종가
+//   hipr?: string; // 가격 최고치 꼬리 상단
+//   lopr?: string; // 가격 최저치 꼬리 하단
+//   mrktTotAmt?: string; //시가총액
+//   trqu?: string; //거래량
+//   trPrc? : string; //거래대금
+// }
+
+type KeyType = "vs"|"fltRt"|"mkp"|"clpr"|"hipr"|"lopr"|"mrktTotAmt"|"trqu"| "trPrc";
+
+type CommonApiData = Record<KeyType, string | undefined>;
+
+const keyToLabel: Record<KeyType, string> = {
+  vs: "전일 등락 대비",
+  fltRt: "전일 대비 등락비",
+  mkp: "시가",
+  clpr: "종가",
+  hipr: "가격 최고치 꼬리 상단",
+  lopr: "가격 최저치 꼬리 하단",
+  mrktTotAmt: "시가총액",
+  trqu: "거래량",
+  trPrc : "거래대금"
+};
 
 const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   const [renderData, setRenderData] = useState<DartData | null>(null);
@@ -72,16 +87,11 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
   async function getPriceByEachDay(stkCode: string, startDate: string) {
     return new Promise(async (resolve, reject) => {
       try {
-       console.log('1')
         const res = await axiosInstance.get(`/api/go-data-term/${startDate}/${stkCode}`);
-        console.log(res)
-        // const eachPrice = res?.data?.response?.body?.items?.item[0]?.mkp;
-        // const eachDate = res?.data?.response?.body?.items?.item[0]?.basDt;
-        // console.log(res?.data?.response?.body?.items?.item[0].basDt)
         if (res) {
           return resolve( res);
         }  else {
-          return resolve(null); //  응답이 없는 경우.
+          return resolve(null); 
         }
       } catch (e) {
         console.log(e);
@@ -110,22 +120,8 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
       }
       setSettledData(result)
     }
-    // const promises = dateData?.map((x: string) => getPriceByEachDay(stkCode, x));
-    // const result = [];
-    // try {
-    //   const promiseResult = await Promise.allSettled(promises);
-    //   for (const i of promiseResult) {
-    //     if (i.status === "fulfilled") {
-    //       result.push(i.value); // Add the resolved value if the promise is fulfilled
-    //     }
-    //   }
-    // } catch (e) {
-    //   console.error(`error on ${e}`);
-    // }
     setSettledData(result);
   };
-
-
 
 
   // Dart의 자료를 통해 종목 코드를 받아서 => 그 코드를 공공데이터에 검색 하는 함수
@@ -153,12 +149,16 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
     <Container>
       {/* renderData가 있는 경우에만 render되도록  */}
       {renderData && (
-        <FirstRowCtnr>
-          <FirstRowLeft>
-            <Item style={{ fontSize: '25px', fontWeight: 'bold' }}>{renderData?.stock_name}</Item>
-            <Item style={{ fontWeight: 'bold' }}>{renderData?.stock_code}</Item>
-          </FirstRowLeft>
-          <FirtstRowRight>
+        <>
+          <DetailHeader 
+            stock_name={renderData?.stock_name} 
+            stock_code={renderData?.stock_code}
+            price={renderDeatilData?.clpr}
+            vs={renderDeatilData?.vs}
+            vsp={renderDeatilData?.fltRt}
+          />
+          <Spacer height={20}/> 
+          <CompanyBasicInfoContainer>
             <Item>{renderData?.corp_name}</Item>
             <Item>{renderData?.corp_name_eng}</Item>
             <Item>{renderData?.adres}</Item>
@@ -176,37 +176,29 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
                 {renderData?.hm_url}
               </a>
             </Item>
-          </FirtstRowRight>
-        </FirstRowCtnr>
+          </CompanyBasicInfoContainer>
+        </>
+        
       )}
+      <Spacer height={30}/>
 
       {renderData && renderDeatilData ? (
         <PriceContainer>
-          <PriceCard>
-            <PriceLabel>시가</PriceLabel>
-            <StockPrice>{renderDeatilData?.mkp}원</StockPrice>
-          </PriceCard>
+          <PriceTable>
+            {Object.entries(renderDeatilData).map(([key, value], index) => {
+              if (key in keyToLabel) {
+                return (
+                  <PriceRow key={index}>
+                    <PriceLabel>{keyToLabel[key as KeyType]}</PriceLabel>
+                    <StockPrice>{value}원</StockPrice> 
+                  </PriceRow>
+                );
+              }
+              return null;
+            })}
+          </ PriceTable >
 
-          <PriceCard>
-            <PriceLabel>전일대비 등락</PriceLabel>
-            <StockPrice>{renderDeatilData?.vs}원</StockPrice>
-          </PriceCard>
-
-          <PriceCard>
-            <PriceLabel>가격 최고치</PriceLabel>
-            <StockPrice>{renderDeatilData?.hipr}원</StockPrice>
-          </PriceCard>
-
-          <PriceCard>
-            <PriceLabel>가격 최저치</PriceLabel>
-            <StockPrice>{renderDeatilData?.lopr}원</StockPrice>
-          </PriceCard>
-
-          <PriceCard>
-            <PriceLabel>시가총액</PriceLabel>
-            <StockPrice>{renderDeatilData?.mrktTotAmt}원</StockPrice>
-          </PriceCard>
-
+          <Spacer height={30}/>
           <StockChart data={ad} />
         </PriceContainer>
       ) : (
@@ -221,37 +213,29 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 export default CompanyDetailInfo;
 
 const Container = styled.div`
-  background-color: #f9f9f9;
-  padding: 20px;
+  
+  /* padding: 20px; */
   
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: auto;
-  margin-bottom: 20px;
+  padding: 20px 0px;
   background-color: ${(props) => props.theme["--100-color"]};
-`;
 
-const FirstRowCtnr = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  margin-bottom: 55px;
   
-`;
+  width: auto; 
+  max-width: none; 
+  @media (min-width:868px) { 
+      width: auto;
+      max-width:868px; 
+      margin-left:auto;
+      margin-right:auto; 
+  }
+  `;
 
-const FirstRowLeft = styled.div`
-  flex: 1;
-  margin-right: 20px;
 
-  background-color: ${(props) => props.theme["--300-color"]};
-  color: ${(props) => props.theme["--800-color"]};
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
 
-const FirtstRowRight = styled.div`
-  flex: 1;
-  margin-left: 20px;
+const CompanyBasicInfoContainer = styled.div`
+  width: 100%;
   color: ${(props) => props.theme["--800-color"]};
   background-color: ${(props) => props.theme["--300-color"]};
   padding: 10px;
@@ -283,14 +267,32 @@ const PriceCard = styled.div`
   text-align: center;
 `;
 
-const PriceLabel = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 5px;
+// const PriceLabel = styled.div`
+//   font-size: 14px;
+//   font-weight: 600;
+//   margin-bottom: 5px;
+// `;
+
+// const StockPrice = styled.div`
+//   font-size: 24px;
+//   font-weight: bold;
+//   color: ${(props) => props.theme["--900-color"]};
+// `;
+
+const PriceTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
 `;
 
-const StockPrice = styled.div`
-  font-size: 24px;
+const PriceRow = styled.tr`
+  border-bottom: 1px solid ${(props) => props.theme["--300-color"]};
+`;
+
+const PriceLabel = styled.td`
+  font-size: 14px;
   font-weight: bold;
-  color: ${(props) => props.theme["--900-color"]};
+`;
+
+const StockPrice = styled.td`
+  font-size: 24px;
 `;
