@@ -28,11 +28,18 @@ const SearchForm = () => {
   const refSearch = React.useRef<HTMLDivElement>(null);
   const searchFormRef = refSearch as React.RefObject<HTMLDivElement>;
 
-  // 
   useEffect(() => {
     getSearchResult(debouncedKeyword);
     console.log("searchResult: ", debouncedKeyword);
   },[debouncedKeyword])
+
+  useEffect(() => {
+    if (toggleState.toggleState) {
+      setOpenDrawer(true);
+    }  else {
+      setOpenDrawer(false);
+    }
+  }, [toggleState.toggleState]);
 
 
   // 검색 결과 DOM 외부 클릭시 발생하는 이벤트 핸들러
@@ -129,9 +136,6 @@ const SearchForm = () => {
     }
   };
 
-  
-
-
 
 
   return (
@@ -158,7 +162,7 @@ const SearchForm = () => {
 
         
         {toggleState.toggleState &&
-          <SearchResultsContainer>
+          <SearchResultsContainer visible={openDrawer}>
             <SearchResultsList>
               {searchResults.map((company, index) => (
                 <SearchResult key={index} company={company} />
@@ -203,19 +207,28 @@ const StockSearchBtn = styled.button`
 
 
 
-const SearchResultsContainer = styled.div`
+const SearchResultsContainer = styled.div<{visible:boolean}>`
   z-index: 999;
   height: 550px;
-  width: 55%;
-  top: 60px;
-  background-color: aliceblue;
-  overflow-y: scroll;
-  position: absolute;
+  width:55%;
+  
+   top :60px; 
+   background-color :aliceblue; 
+   overflow-y :scroll; 
+   position :absolute;
 
-  border: 1px solid #8b8b8b;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+   border :1px solid #8b8b8b; 
+   border-bottom-left-radius :10px; 
+   border-bottom-right-radius :10px;
 
+   
+   transform: scaleY(0);
+    transform-origin: top;
+    transition: transform .5s ease-out;
+    
+    ${({ visible }) => visible && `
+        transform: scaleY(1);
+    `}
 `;
 
 const FadeEffect = styled.div`
