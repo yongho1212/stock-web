@@ -40,7 +40,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ stock_name, stock_code, pri
                         fontWeight: 'bold',
                         color: isVspPositive ? 'green' : 'red',
                     }}>
-                        ({isVspPositive ? '+' : ''}{vsp}%)
+                        ({isVspPositive ? '+' : ''}{parseFloat(vsp || '0').toFixed(2)}%)
                         </PriceInfoText>
                 </VsContainer>
             </PriceInfoContainer>

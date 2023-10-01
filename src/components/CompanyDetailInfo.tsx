@@ -113,8 +113,6 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
       for (const i of dataArr){
         const eachDate = i.basDt;
         const eachPrice = i.mkp;
-        
-        console.log(i)  
         result.push({ date: eachDate, price: eachPrice })
         
       }
@@ -190,7 +188,7 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
                 return (
                   <PriceRow key={index}>
                     <PriceLabel>{keyToLabel[key as KeyType]}</PriceLabel>
-                    <StockPrice>{value}원</StockPrice> 
+                    <StockPrice>{parseFloat(value || '0').toLocaleString()}원</StockPrice>
                   </PriceRow>
                 );
               }
@@ -255,6 +253,7 @@ const PriceContainer = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
+  
 `;
 
 const PriceCard = styled.div`
@@ -291,8 +290,10 @@ const PriceRow = styled.tr`
 const PriceLabel = styled.td`
   font-size: 14px;
   font-weight: bold;
+  
 `;
 
 const StockPrice = styled.td`
   font-size: 24px;
+  text-align: right;
 `;
