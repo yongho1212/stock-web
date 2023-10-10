@@ -58,7 +58,7 @@ const StockChart = ({ data }) => {
     <ResponsiveContainer width="100%" height={400} >
       <LineChart
         width={500}
-        height={300}
+        height={400}
         data={filledData}
         margin={{
           top: 5,

@@ -44,11 +44,11 @@ const HeaderContainer = styled.div`
     justify-content: space-between;
     align-items: center;   
 
-    @media (min-width:868px) { // 화면 크기가 최소한 데스크탑이라 가정
+    @media (min-width:868px) { 
         width: auto;
-        max-width:868px; // 내용의 최대 너비 설정
-        margin-left:auto; // 중앙 정렬을 위한 마진 설정
-        margin-right:auto; // 중앙 정렬을 위한 마진 설정
+        max-width:868px; 
+        margin-left:auto;
+        margin-right:auto;
 }
 `
 

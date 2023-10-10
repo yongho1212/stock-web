@@ -51,7 +51,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ stock_name, stock_code, pri
 export default DetailHeader
 
 const HeaderContainer = styled.div`
-  width: 100%;
+  width: 90%;
   background-color: ${(props) => props.theme["--300-color"]};
   color: ${(props) => props.theme["--800-color"]};
   border-radius: 5px;

@@ -145,9 +145,9 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 
   return (
     <Container>
-      {/* renderData가 있는 경우에만 render되도록  */}
+      <LeftContainer>
       {renderData && (
-        <>
+          <>
           <DetailHeader 
             stock_name={renderData?.stock_name} 
             stock_code={renderData?.stock_code}
@@ -155,7 +155,32 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
             vs={renderDeatilData?.vs}
             vsp={renderDeatilData?.fltRt}
           />
-          <Spacer height={20}/> 
+          <Spacer height={20}/>
+          <StockChart data={ad} />
+          </>
+          )}
+          </LeftContainer>
+          <RightContainer>
+
+      {renderData && renderDeatilData ? (
+        <PriceContainer>
+          <PriceTable>
+            {Object.entries(renderDeatilData).map(([key, value], index) => {
+              if (key in keyToLabel) {
+                return (
+                  <PriceRow key={index}>
+                    <PriceLabel>{keyToLabel[key as KeyType]}</PriceLabel>
+                    <StockPrice>
+                      {parseFloat(value || '0').toLocaleString()}
+                      {key === 'fltRt' ? '%' : key === 'trqu' ? ' ' : '원'}
+                      </StockPrice>
+                  </PriceRow>
+                );
+              }
+              return null;
+            })}
+          </ PriceTable >
+
           <CompanyBasicInfoContainer>
             <Item>{renderData?.corp_name}</Item>
             <Item>{renderData?.corp_name_eng}</Item>
@@ -175,35 +200,15 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
               </a>
             </Item>
           </CompanyBasicInfoContainer>
-        </>
-        
-      )}
-      <Spacer height={30}/>
-
-      {renderData && renderDeatilData ? (
-        <PriceContainer>
-          <PriceTable>
-            {Object.entries(renderDeatilData).map(([key, value], index) => {
-              if (key in keyToLabel) {
-                return (
-                  <PriceRow key={index}>
-                    <PriceLabel>{keyToLabel[key as KeyType]}</PriceLabel>
-                    <StockPrice>{parseFloat(value || '0').toLocaleString()}원</StockPrice>
-                  </PriceRow>
-                );
-              }
-              return null;
-            })}
-          </ PriceTable >
-
-          <Spacer height={30}/>
-          <StockChart data={ad} />
+          
         </PriceContainer>
       ) : (
         <div>
           <Indicator />
         </div>
       )}
+          </RightContainer>
+
     </Container>
   );
 };
@@ -211,29 +216,39 @@ const CompanyDetailInfo: React.FC<Props> = ({ corpCode }) => {
 export default CompanyDetailInfo;
 
 const Container = styled.div`
-  
-  /* padding: 20px; */
-  
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: auto;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  height: 100vh ;
   padding: 20px 0px;
   background-color: ${(props) => props.theme["--100-color"]};
-
+  display: flex;
   
-  width: auto; 
+  
   max-width: none; 
-  @media (min-width:868px) { 
+  /* @media (min-width:868px) { 
       width: auto;
       max-width:868px; 
       margin-left:auto;
       margin-right:auto; 
-  }
-  `;
+  } */
+`;
 
+const LeftContainer = styled.div`
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+`
+
+const RightContainer = styled.div`
+  flex: 2;
+`
 
 
 const CompanyBasicInfoContainer = styled.div`
-  width: 100%;
+  width: 90%;
+  height: 200px;
+  margin-left: 5%;
   color: ${(props) => props.theme["--800-color"]};
   background-color: ${(props) => props.theme["--300-color"]};
   padding: 10px;
@@ -266,18 +281,6 @@ const PriceCard = styled.div`
   text-align: center;
 `;
 
-// const PriceLabel = styled.div`
-//   font-size: 14px;
-//   font-weight: 600;
-//   margin-bottom: 5px;
-// `;
-
-// const StockPrice = styled.div`
-//   font-size: 24px;
-//   font-weight: bold;
-//   color: ${(props) => props.theme["--900-color"]};
-// `;
-
 const PriceTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -288,12 +291,13 @@ const PriceRow = styled.tr`
 `;
 
 const PriceLabel = styled.td`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
-  
+  color: ${(props) => props.theme["--800-color"]};
 `;
 
 const StockPrice = styled.td`
   font-size: 24px;
   text-align: right;
+  color: ${(props) => props.theme["--800-color"]};
 `;

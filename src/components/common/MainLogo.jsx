@@ -1,6 +1,7 @@
 import React from 'react'
 import { styled } from 'styled-components'
 import {useNavigate} from 'react-router-dom'
+import logo from '../../assets/logos/icon.png'
 
 const MainLogo = () => {
 
@@ -14,7 +15,7 @@ const MainLogo = () => {
     <MainLogoCtnr
         onClick={onPress}
     >
-        MainLogo
+        <img src={logo} width={40}/>
     </MainLogoCtnr>
   )
 }
@@ -24,7 +25,7 @@ export default MainLogo
 const MainLogoCtnr = styled.div`
     width: 90px;
     height: 30px;
-    background-color: #fff;
+    
     color: #3366FF;
 
     display: flex;
