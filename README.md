@@ -1,6 +1,8 @@
 # 주식 정보 웹사이트
 
-![스크린샷 2023-10-20 오후 6.26.59.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f937bc9e-7460-4809-9f29-ca5a2df281c1/7b052284-f526-41c2-b99b-439fe31870b2/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-10-20_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_6.26.59.png)
+![스크린샷 2023-10-20 오후 6.26.59.png](https://github.com/yongho1212/stock-web/assets/61383329/a1b64802-79e6-40eb-9eab-faf596a03b57)
+
+https://github.com/yongho1212/stock-web/assets/61383329/a1b64802-79e6-40eb-9eab-faf596a03b57
 
 ### 요약
 
